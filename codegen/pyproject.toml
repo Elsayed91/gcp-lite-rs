@@ -1,0 +1,7 @@
+[project]
+name = "gcp-lite-codegen"
+version = "0.0.0"
+requires-python = ">=3.11"
+dependencies = [
+    "cloud-lite-codegen @ git+https://github.com/Elsayed91/cloud-lite-codegen.git",
+]

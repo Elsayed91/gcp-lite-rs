@@ -2,5 +2,7 @@
 Cargo.lock
 __pycache__/
 *.pyc
+.venv/
+.env
 codegen/generated/
 codegen/discovery_cache/
