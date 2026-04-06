@@ -107,7 +107,7 @@ Add test function in `tests/integration/{api_name}.rs`:
 
 ### Step C: Run Integration Test
 ```
-cargo test --test integration {api_name} -- --ignored --test-threads=1 --nocapture
+cargo nextest run --test integration {api_name} -- --ignored --test-threads=1 --nocapture
 ```
 Fix failures (missing body fields, special URLs, empty query params, path encoding). Re-run until passing.
 
@@ -116,7 +116,7 @@ In `src/api/{api_name}.rs`, encode proven-correct URL patterns, body fields, par
 
 ### Step E: Run Full Test Suite
 ```
-cargo test --lib
+cargo nextest run --lib
 ```
 
 ### Step F: Commit
@@ -138,8 +138,8 @@ feat: add {api_name} {group_name} operations
 ```
 cargo check
 cargo clippy -- -D warnings
-cargo test --lib
-cargo test --test integration {api_name} -- --ignored --test-threads=1 --nocapture
+cargo nextest run --lib
+cargo nextest run --test integration {api_name} -- --ignored --test-threads=1 --nocapture
 ```
 
 Report results. Fix and re-run if anything fails.

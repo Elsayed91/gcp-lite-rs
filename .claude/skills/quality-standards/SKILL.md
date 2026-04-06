@@ -21,7 +21,7 @@ Any changes = CRITICAL. Also check `src/api/` for copy-pasted generated code.
 ```bash
 cargo fmt --check
 cargo clippy -- -D warnings
-cargo test --lib
+cargo nextest run --lib
 ```
 **4. Code review** — check against Architecture, Serde, and Review Checklist sections below.
 **5. Test evaluation** — check against Testing Standards below. Flag tests that only assert `is_ok()`.

@@ -25,7 +25,7 @@ Read these files to understand conventions (skip any that don't exist):
 3. Relevant `.claude/docs/` for the target domain (e.g., architecture, testing guide)
 
 Extract and note:
-- Exact build & test commands (e.g., `cargo check`, `cargo test --lib`)
+- Exact build & test commands (e.g., `cargo check`, `cargo nextest run --lib`)
 - Quality gate commands (e.g., `cargo clippy -- -D warnings`)
 - Commit message conventions
 - Whether the project uses: codegen pipeline, integration-first testing, generated vs hand-written layers
