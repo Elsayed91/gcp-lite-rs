@@ -39,8 +39,11 @@ jobs:
           VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Install nextest
+        uses: taiki-e/install-action@nextest
+
       - name: Run tests
-        run: cargo test --lib
+        run: cargo nextest run --lib
 
       - name: Commit and tag
         run: |

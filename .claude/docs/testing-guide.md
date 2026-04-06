@@ -381,11 +381,11 @@ mod snapshot_tests {
 ```bash
 # All integration tests
 GOOGLE_AUTH_USE_GCLOUD=1 GCLOUD_PROJECT_ID=your-project-id \
-  cargo test --test integration -- --ignored --test-threads=1 --nocapture
+  cargo nextest run --test integration -- --ignored --test-threads=1 --nocapture
 
 # Single API
 GOOGLE_AUTH_USE_GCLOUD=1 GCLOUD_PROJECT_ID=your-project-id \
-  cargo test --test integration {api_name} -- --ignored --test-threads=1 --nocapture
+  cargo nextest run --test integration {api_name} -- --ignored --test-threads=1 --nocapture
 ```
 
 ### Prerequisites
@@ -523,7 +523,7 @@ async fn ensure_apis_enabled(
 //!
 //! Run with:
 //!   GOOGLE_AUTH_USE_GCLOUD=1 GCLOUD_PROJECT_ID=<project> \
-//!     cargo test --test integration {api_name} -- --ignored --nocapture
+//!     cargo nextest run --test integration {api_name} -- --ignored --nocapture
 
 use gcp_http_lite::GcpHttpClient;
 use std::env;
@@ -602,7 +602,7 @@ async fn run_tests(
 test:integration:{api_name}:
   desc: {API Display Name} integration tests
   cmds:
-    - cargo test --test integration {api_name} -- --ignored --test-threads=1 --nocapture
+    - cargo nextest run --test integration {api_name} -- --ignored --test-threads=1 --nocapture
 ```
 
 ### Checklist for Integration Tests

@@ -11,7 +11,7 @@ if [ $? -ne 0 ]; then
   exit 2
 fi
 
-TEST_OUTPUT=$(cargo test --lib 2>&1)
+TEST_OUTPUT=$(cargo nextest run --lib 2>&1)
 if [ $? -ne 0 ]; then
   echo "Quality gate FAILED: tests failing." >&2
   echo "$TEST_OUTPUT" | grep -E "FAILED|panicked|failures:|test result:" | head -20 >&2

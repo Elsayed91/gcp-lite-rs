@@ -15,4 +15,6 @@ jobs:
           components: clippy, rustfmt
       - run: cargo fmt --check
       - run: cargo clippy -- -D warnings
-      - run: cargo test --lib
+      - name: Install nextest
+        uses: taiki-e/install-action@nextest
+      - run: cargo nextest run --lib

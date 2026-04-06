@@ -11,7 +11,7 @@ Rust edition 2024.
 ```bash
 cargo check
 cargo clippy -- -D warnings
-cargo test --lib
+cargo nextest run --lib
 cargo fmt --check
 
 # Codegen
@@ -50,7 +50,7 @@ If generated code has a bug:
 2. **NEVER overwrite existing `src/api/*.rs` files** — only create new or extend
 3. **Manifests** are the single source of truth for generated code
 4. **No builders** — use `Default` derive + struct literal pattern
-5. **Integration tests are for local dev only** — CI runs `cargo test --lib`
+5. **Integration tests are for local dev only** — CI runs `cargo nextest run --lib`
 
 ### Authentication
 
@@ -62,7 +62,7 @@ Set `GCLOUD_PROJECT_ID` env var.
 ```bash
 cargo check
 cargo clippy -- -D warnings
-cargo test --lib
+cargo nextest run --lib
 cargo fmt --check
 ```
 
