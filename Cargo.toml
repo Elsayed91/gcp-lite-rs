@@ -10,7 +10,7 @@ keywords = ["gcp", "google-cloud"]
 categories = ["api-bindings"]
 
 [dependencies]
-cloud-lite-core = { package = "cloud-lite-core-rs", version = "0.1", path = "../cloud-lite-core" }
+cloud-lite-core = { package = "cloud-lite-core-rs", version = "0.1" }
 reqwest = { version = "0.13", features = ["json", "rustls"], default-features = false }
 tokio = { version = "1", features = ["time", "sync", "process"] }
 async-trait = "0.1"
