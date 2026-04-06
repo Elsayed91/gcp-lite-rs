@@ -1,0 +1,10 @@
+---
+source: tests/snapshot/storage.rs
+expression: "Policy::fixture()"
+---
+{
+  "etag": "test-etag",
+  "kind": "test-kind",
+  "resourceId": "test-resource_id",
+  "version": 100
+}

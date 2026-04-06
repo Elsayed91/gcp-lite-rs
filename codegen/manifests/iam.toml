@@ -1,0 +1,100 @@
+# IAM API - Codegen Manifest
+# Service account and key management operations.
+
+[api]
+name = "iam"
+display_name = "IAM"
+version = "v1"
+discovery_url = "https://www.googleapis.com/discovery/v1/apis/iam/v1/rest"
+base_url = "https://iam.googleapis.com"
+doc_url = "https://cloud.google.com/iam/docs/reference/rest/v1"
+
+[api.client]
+accessor_name = "iam"
+client_struct = "IamClient"
+
+[api.path_helpers]
+service_account_name = "projects/{project}/serviceAccounts/{email}"
+project_name = "projects/{project}"
+key_name = "projects/{project}/serviceAccounts/{email}/keys/{key_id}"
+
+# --- Types ---
+
+[[types]]
+schema = "ServiceAccount"
+include_fields = [
+    "name", "projectId", "uniqueId", "email",
+    "displayName", "description", "disabled",
+    "oauth2ClientId", "etag",
+]
+
+[types.field_overrides]
+name = { required = true }
+
+[[types]]
+schema = "CreateServiceAccountRequest"
+include_fields = ["accountId", "serviceAccount"]
+
+[types.field_overrides]
+accountId = { required = true }
+
+[[types]]
+schema = "ServiceAccountKey"
+include_fields = [
+    "name", "keyAlgorithm", "keyOrigin", "keyType",
+    "privateKeyData", "privateKeyType", "publicKeyData",
+    "validAfterTime", "validBeforeTime", "disabled",
+]
+
+[types.field_overrides]
+name = { required = true }
+
+[[types]]
+schema = "CreateServiceAccountKeyRequest"
+include_fields = ["keyAlgorithm", "privateKeyType"]
+
+[[types]]
+schema = "ListServiceAccountKeysResponse"
+include_fields = ["keys"]
+
+[[types]]
+schema = "Empty"
+rust_name = "IamEmpty"
+
+# --- Operations ---
+
+[[operations]]
+discovery_method = "projects.serviceAccounts.create"
+rust_name = "create_service_account"
+description = "Create a service account"
+
+[[operations]]
+discovery_method = "projects.serviceAccounts.get"
+rust_name = "get_service_account"
+description = "Get a service account"
+
+[[operations]]
+discovery_method = "projects.serviceAccounts.list"
+rust_name = "list_service_accounts"
+description = "List service accounts in a project"
+list_response = { type_name = "ListServiceAccountsResponse", items_field = "accounts", item_type = "ServiceAccount" }
+
+[[operations]]
+discovery_method = "projects.serviceAccounts.delete"
+rust_name = "delete_service_account"
+description = "Delete a service account"
+
+[[operations]]
+discovery_method = "projects.serviceAccounts.keys.create"
+rust_name = "create_service_account_key"
+description = "Create a service account key"
+
+[[operations]]
+discovery_method = "projects.serviceAccounts.keys.list"
+rust_name = "list_service_account_keys"
+description = "List service account keys"
+
+[[operations]]
+discovery_method = "projects.serviceAccounts.keys.delete"
+rust_name = "delete_service_account_key"
+description = "Delete a service account key"

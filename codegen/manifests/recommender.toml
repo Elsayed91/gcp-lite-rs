@@ -1,0 +1,164 @@
+# Recommender API - Codegen Manifest
+# Curated for: recommendations.list (paginated, projects scope)
+# Pattern: stream() + collect_all() like cloudasset
+
+[api]
+name = "recommender"
+display_name = "Recommender API"
+version = "v1"
+discovery_url = "https://www.googleapis.com/discovery/v1/apis/recommender/v1/rest"
+base_url = "https://recommender.googleapis.com"
+doc_url = "https://cloud.google.com/recommender/docs/"
+
+[api.client]
+accessor_name = "recommender"
+client_struct = "RecommenderClient"
+
+# --- Types ---
+
+# The main recommendation type
+[[types]]
+schema = "GoogleCloudRecommenderV1Recommendation"
+rust_name = "Recommendation"
+include_fields = [
+    "name",
+    "description",
+    "stateInfo",
+    "recommenderSubtype",
+    "targetResources",
+    "content",
+    "associatedInsights",
+    "primaryImpact",
+    "additionalImpact",
+    "lastRefreshTime",
+    "priority",
+    "etag",
+    "xorGroupId",
+]
+
+[types.field_overrides]
+name = { required = true }
+priority = { enum_type = "RecommendationPriority" }
+
+[types.omitted]
+# All fields included
+
+# List response wrapper
+[[types]]
+schema = "GoogleCloudRecommenderV1ListRecommendationsResponse"
+rust_name = "ListRecommendationsResponse"
+
+# State information
+[[types]]
+schema = "GoogleCloudRecommenderV1RecommendationStateInfo"
+rust_name = "RecommendationStateInfo"
+include_fields = ["state", "stateMetadata"]
+
+[types.field_overrides]
+state = { enum_type = "RecommendationState" }
+
+# Recommendation content (operations to apply)
+[[types]]
+schema = "GoogleCloudRecommenderV1RecommendationContent"
+rust_name = "RecommendationContent"
+include_fields = ["overview", "operationGroups"]
+
+[types.field_overrides]
+overview = { rust_type = "serde_json::Value" }
+
+# Insight reference
+[[types]]
+schema = "GoogleCloudRecommenderV1RecommendationInsightReference"
+rust_name = "RecommendationInsightReference"
+include_fields = ["insight"]
+
+# Impact (primary and additional)
+[[types]]
+schema = "GoogleCloudRecommenderV1Impact"
+rust_name = "Impact"
+include_fields = [
+    "category",
+    "service",
+    "costProjection",
+    "securityProjection",
+    "sustainabilityProjection",
+    "reliabilityProjection",
+]
+
+[types.field_overrides]
+category = { enum_type = "ImpactCategory" }
+
+# Cost projection
+[[types]]
+schema = "GoogleCloudRecommenderV1CostProjection"
+rust_name = "CostProjection"
+include_fields = ["cost", "costInLocalCurrency", "duration"]
+
+# Security projection
+[[types]]
+schema = "GoogleCloudRecommenderV1SecurityProjection"
+rust_name = "SecurityProjection"
+include_fields = ["details"]
+
+[types.field_overrides]
+details = { rust_type = "serde_json::Value" }
+
+# Sustainability projection
+[[types]]
+schema = "GoogleCloudRecommenderV1SustainabilityProjection"
+rust_name = "SustainabilityProjection"
+include_fields = ["kgCO2e", "duration"]
+
+# Reliability projection
+[[types]]
+schema = "GoogleCloudRecommenderV1ReliabilityProjection"
+rust_name = "ReliabilityProjection"
+include_fields = ["risks", "details"]
+
+[types.field_overrides]
+details = { rust_type = "serde_json::Value" }
+
+# Operation group
+[[types]]
+schema = "GoogleCloudRecommenderV1OperationGroup"
+rust_name = "OperationGroup"
+include_fields = ["operations"]
+
+# Individual operation
+[[types]]
+schema = "GoogleCloudRecommenderV1Operation"
+rust_name = "RecommendationOperation"
+include_fields = [
+    "action",
+    "resource",
+    "resourceType",
+    "path",
+    "value",
+    "sourcePath",
+    "sourceResource",
+]
+
+[types.field_overrides]
+value = { rust_type = "serde_json::Value" }
+
+[types.omitted]
+pathFilters = "Advanced filtering — rarely used"
+pathValueMatchers = "Advanced matching — rarely used"
+valueMatcher = "Advanced matching — rarely used"
+
+# Money type (from google.type)
+[[types]]
+schema = "GoogleTypeMoney"
+rust_name = "Money"
+include_fields = ["currencyCode", "units", "nanos"]
+
+# --- Operations ---
+
+# Only need the projects-scope list method.
+# The API layer will construct the deeply nested parent path from project, location, recommender_id.
+[[operations]]
+discovery_method = "projects.locations.recommenders.recommendations.list"
+rust_name = "list_recommendations"
+description = "Lists recommendations for the specified recommender."
+query_params = ["filter", "pageSize", "pageToken"]
+list_response = { type_name = "ListRecommendationsResponse", items_field = "recommendations", item_type = "Recommendation" }

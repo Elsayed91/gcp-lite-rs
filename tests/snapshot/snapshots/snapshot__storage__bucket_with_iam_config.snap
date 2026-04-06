@@ -1,0 +1,10 @@
+---
+source: tests/snapshot/storage.rs
+expression: bucket
+---
+{
+  "iamConfiguration": {
+    "publicAccessPrevention": "enforced"
+  },
+  "name": "iam-bucket"
+}

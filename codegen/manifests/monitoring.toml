@@ -1,0 +1,198 @@
+# Cloud Monitoring API - Codegen Manifest
+# Read-only metrics operations for policy engine use.
+# NOTE: timeSeries.list is NOT in ops because its dotted query params
+# (interval.startTime, aggregation.alignmentPeriod, etc.) are not supported
+# by codegen's to_snake_case. It is implemented directly in the API layer.
+
+[api]
+name = "monitoring"
+display_name = "Cloud Monitoring API"
+version = "v3"
+discovery_url = "https://www.googleapis.com/discovery/v1/apis/monitoring/v3/rest"
+base_url = "https://monitoring.googleapis.com"
+doc_url = "https://cloud.google.com/monitoring/api/"
+
+[api.client]
+accessor_name = "monitoring"
+client_struct = "MonitoringClient"
+
+# --- Types ---
+
+[[types]]
+schema = "TimeSeries"
+include_fields = ["metric", "resource", "metricKind", "valueType", "points", "metadata", "unit", "description"]
+
+[[types]]
+schema = "Point"
+include_fields = ["interval", "value"]
+
+[[types]]
+schema = "TimeInterval"
+include_fields = ["endTime", "startTime"]
+
+[[types]]
+schema = "TypedValue"
+include_fields = ["int64Value", "doubleValue", "stringValue", "boolValue", "distributionValue"]
+
+[types.field_overrides]
+distributionValue = { rust_type = "serde_json::Value" }
+
+[[types]]
+schema = "Metric"
+include_fields = ["type", "labels"]
+
+[types.field_overrides]
+type = { rust_name = "metric_type", serde_rename = "type" }
+
+[[types]]
+schema = "MonitoredResource"
+include_fields = ["type", "labels"]
+
+[types.field_overrides]
+type = { rust_name = "resource_type", serde_rename = "type" }
+
+[[types]]
+schema = "MonitoredResourceMetadata"
+include_fields = ["systemLabels", "userLabels"]
+
+[types.field_overrides]
+systemLabels = { rust_type = "serde_json::Value" }
+
+[[types]]
+schema = "MetricDescriptor"
+include_fields = ["name", "type", "labels", "metricKind", "valueType", "unit", "description", "displayName", "metadata", "launchStage", "monitoredResourceTypes"]
+
+[types.field_overrides]
+name = { required = true }
+type = { rust_name = "metric_type", serde_rename = "type" }
+
+[[types]]
+schema = "LabelDescriptor"
+include_fields = ["key", "valueType", "description"]
+
+[types.field_overrides]
+key = { required = true }
+
+[[types]]
+schema = "MetricDescriptorMetadata"
+include_fields = ["launchStage", "samplePeriod", "ingestDelay"]
+
+[[types]]
+schema = "ListTimeSeriesResponse"
+include_fields = ["timeSeries", "nextPageToken", "unit"]
+
+[[types]]
+schema = "MonitoredResourceDescriptor"
+include_fields = ["name", "type", "displayName", "description", "labels", "launchStage"]
+
+[types.field_overrides]
+name = { required = true }
+type = { rust_name = "resource_type", serde_rename = "type" }
+
+[[types]]
+schema = "Documentation"
+include_fields = ["content", "subject", "mimeType"]
+
+[[types]]
+schema = "Condition"
+include_fields = ["name", "displayName", "conditionThreshold", "conditionAbsent", "conditionMatchedLog", "conditionMonitoringQueryLanguage"]
+
+[types.field_overrides]
+conditionThreshold = { rust_type = "serde_json::Value" }
+conditionAbsent = { rust_type = "serde_json::Value" }
+conditionMatchedLog = { rust_type = "serde_json::Value" }
+conditionMonitoringQueryLanguage = { rust_type = "serde_json::Value" }
+
+[[types]]
+schema = "AlertPolicy"
+include_fields = ["name", "displayName", "enabled", "conditions", "notificationChannels", "combiner", "userLabels", "documentation", "severity"]
+
+[types.field_overrides]
+userLabels = { rust_type = "std::collections::HashMap<String, String>" }
+notificationChannels = { rust_type = "Vec<String>" }
+
+[[types]]
+schema = "NotificationChannel"
+include_fields = ["name", "displayName", "type", "description", "enabled", "labels", "verificationStatus"]
+
+[types.field_overrides]
+type = { rust_name = "channel_type", serde_rename = "type" }
+labels = { rust_type = "std::collections::HashMap<String, String>" }
+
+[[types]]
+schema = "ListAlertPoliciesResponse"
+include_fields = ["alertPolicies", "nextPageToken", "totalSize"]
+
+[[types]]
+schema = "ListNotificationChannelsResponse"
+include_fields = ["notificationChannels", "nextPageToken", "totalSize"]
+
+[[types]]
+schema = "Empty"
+rust_name = "MonitoringEmpty"
+
+# --- Operations ---
+# Only metricDescriptors and monitoredResourceDescriptors go through ops.
+# timeSeries.list is handled in the API layer due to dotted query params.
+
+[[operations]]
+discovery_method = "projects.metricDescriptors.list"
+rust_name = "list_metric_descriptors"
+description = "Lists metric descriptors that match a filter."
+query_params = ["filter", "pageSize", "pageToken"]
+list_response = { type_name = "ListMetricDescriptorsResponse", items_field = "metricDescriptors", item_type = "MetricDescriptor" }
+
+[[operations]]
+discovery_method = "projects.metricDescriptors.get"
+rust_name = "get_metric_descriptor"
+description = "Gets a single metric descriptor."
+
+[[operations]]
+discovery_method = "projects.monitoredResourceDescriptors.list"
+rust_name = "list_monitored_resource_descriptors"
+description = "Lists monitored resource descriptors that match a filter."
+query_params = ["filter", "pageSize", "pageToken"]
+list_response = { type_name = "ListMonitoredResourceDescriptorsResponse", items_field = "resourceDescriptors", item_type = "MonitoredResourceDescriptor" }
+
+[[operations]]
+discovery_method = "projects.monitoredResourceDescriptors.get"
+rust_name = "get_monitored_resource_descriptor"
+description = "Gets a single monitored resource descriptor."
+
+# Alert Policies
+
+[[operations]]
+discovery_method = "projects.alertPolicies.list"
+rust_name = "list_alert_policies"
+description = "Lists the existing alerting policies for the workspace."
+query_params = ["filter", "pageSize", "pageToken"]
+list_response = { type_name = "ListAlertPoliciesResponse", items_field = "alertPolicies", item_type = "AlertPolicy" }
+
+[[operations]]
+discovery_method = "projects.alertPolicies.create"
+rust_name = "create_alert_policy"
+description = "Creates a new alerting policy."
+
+[[operations]]
+discovery_method = "projects.alertPolicies.delete"
+rust_name = "delete_alert_policy"
+description = "Deletes an alerting policy."
+
+# Notification Channels
+
+[[operations]]
+discovery_method = "projects.notificationChannels.list"
+rust_name = "list_notification_channels"
+description = "Lists the notification channels that have been created for the project."
+query_params = ["filter", "pageSize", "pageToken"]
+list_response = { type_name = "ListNotificationChannelsResponse", items_field = "notificationChannels", item_type = "NotificationChannel" }
+
+[[operations]]
+discovery_method = "projects.notificationChannels.create"
+rust_name = "create_notification_channel"
+description = "Creates a new notification channel."
+
+[[operations]]
+discovery_method = "projects.notificationChannels.delete"
+rust_name = "delete_notification_channel"
+description = "Deletes a notification channel."

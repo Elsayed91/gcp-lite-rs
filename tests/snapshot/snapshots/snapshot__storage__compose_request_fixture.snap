@@ -1,0 +1,42 @@
+---
+source: crates/gcp-lite/tests/snapshot/storage.rs
+expression: "ComposeRequest::fixture()"
+---
+{
+  "deleteSourceObjects": false,
+  "destination": {
+    "bucket": "test-bucket",
+    "cacheControl": "test-cache_control",
+    "componentCount": 100,
+    "contentDisposition": "test-content_disposition",
+    "contentEncoding": "test-content_encoding",
+    "contentLanguage": "test-content_language",
+    "contentType": "test-content_type",
+    "crc32c": "test-crc32c",
+    "customTime": "test-custom_time",
+    "etag": "test-etag",
+    "eventBasedHold": false,
+    "generation": "test-generation",
+    "hardDeleteTime": "test-hard_delete_time",
+    "id": "test-id",
+    "kind": "test-kind",
+    "kmsKeyName": "test-kms_key_name",
+    "md5Hash": "test-md5_hash",
+    "mediaLink": "test-media_link",
+    "metageneration": "test-metageneration",
+    "name": "test-object",
+    "restoreToken": "test-restore_token",
+    "retentionExpirationTime": "test-retention_expiration_time",
+    "selfLink": "test-self_link",
+    "size": "test-size",
+    "softDeleteTime": "test-soft_delete_time",
+    "storageClass": "test-storage_class",
+    "temporaryHold": false,
+    "timeCreated": "test-time_created",
+    "timeDeleted": "test-time_deleted",
+    "timeFinalized": "test-time_finalized",
+    "timeStorageClassUpdated": "test-time_storage_class_updated",
+    "updated": "test-updated"
+  },
+  "kind": "test-kind"
+}

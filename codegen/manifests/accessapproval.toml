@@ -1,0 +1,69 @@
+# Access Approval API - Codegen Manifest
+# Needed by GCP CIS benchmark check 2.15 (logging_access_approval):
+# verify that Access Approval is enrolled for at least one service on the org/project.
+
+[api]
+name = "accessapproval"
+display_name = "Access Approval API"
+version = "v1"
+discovery_url = "https://www.googleapis.com/discovery/v1/apis/accessapproval/v1/rest"
+base_url = "https://accessapproval.googleapis.com"
+doc_url = "https://cloud.google.com/assured-workloads/access-approval/docs"
+
+[api.client]
+accessor_name = "access_approval"
+client_struct = "AccessApprovalClient"
+
+# --- Types ---
+
+# A service enrolled in Access Approval (cloudProduct + enrollmentLevel).
+[[types]]
+schema = "EnrolledService"
+include_fields = ["cloudProduct", "enrollmentLevel"]
+
+# Top-level settings object returned by GetAccessApprovalSettings.
+# approvalPolicy / effectiveApprovalPolicy omitted — CustomerApprovalApprovalPolicy is
+# an empty schema in the discovery doc and not needed for CIS checks.
+[[types]]
+schema = "AccessApprovalSettings"
+include_fields = [
+    "name",
+    "notificationEmails",
+    "enrolledServices",
+    "enrolledAncestor",
+    "notificationPubsubTopic",
+    "activeKeyVersion",
+    "invalidKeyVersion",
+    "ancestorHasActiveKeyVersion",
+    "ancestorsEnrolledServices",
+    "preferNoBroadApprovalRequests",
+    "preferredRequestExpirationDays",
+    "requestScopeMaxWidthPreference",
+    "requireCustomerVisibleJustification",
+]
+
+[types.field_overrides]
+name = { required = true }
+
+# --- Operations ---
+# GetAccessApprovalSettings for project, folder, and organization.
+# A single API method exists at each resource level; we expose all three so
+# callers can check settings regardless of the resource hierarchy level.
+
+[[operations]]
+discovery_resource = "projects"
+discovery_method = "getAccessApprovalSettings"
+rust_name = "get_access_approval_settings_project"
+description = "Gets the Access Approval settings for a project."
+
+[[operations]]
+discovery_resource = "folders"
+discovery_method = "getAccessApprovalSettings"
+rust_name = "get_access_approval_settings_folder"
+description = "Gets the Access Approval settings for a folder."
+
+[[operations]]
+discovery_resource = "organizations"
+discovery_method = "getAccessApprovalSettings"
+rust_name = "get_access_approval_settings_org"
+description = "Gets the Access Approval settings for an organization."

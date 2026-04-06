@@ -1,0 +1,139 @@
+# Cloud Scheduler API - Codegen Manifest
+# Job scheduling operations (CRUD + pause/resume/run).
+
+[api]
+name = "cloudscheduler"
+display_name = "Cloud Scheduler"
+version = "v1"
+discovery_url = "https://www.googleapis.com/discovery/v1/apis/cloudscheduler/v1/rest"
+base_url = "https://cloudscheduler.googleapis.com"
+doc_url = "https://cloud.google.com/scheduler/docs/reference/rest/v1"
+
+[api.client]
+accessor_name = "scheduler"
+client_struct = "SchedulerClient"
+
+# No LRO section - all job operations are synchronous
+
+# --- Types ---
+
+[[types]]
+schema = "Job"
+include_fields = [
+    "name", "description", "schedule", "timeZone", "state",
+    "httpTarget", "pubsubTarget", "appEngineHttpTarget",
+    "retryConfig", "attemptDeadline",
+    "lastAttemptTime", "scheduleTime", "userUpdateTime", "status",
+]
+
+[types.field_overrides]
+name = { required = true }
+state = { enum_type = "JobState" }
+
+[[types]]
+schema = "HttpTarget"
+include_fields = ["uri", "httpMethod", "headers", "body", "oauthToken", "oidcToken"]
+
+[types.field_overrides]
+httpMethod = { enum_type = "HttpMethod" }
+body = { format = "bytes" }
+
+[[types]]
+schema = "OAuthToken"
+include_fields = ["serviceAccountEmail", "scope"]
+
+[[types]]
+schema = "OidcToken"
+include_fields = ["serviceAccountEmail", "audience"]
+
+[[types]]
+schema = "PubsubTarget"
+include_fields = ["topicName", "data", "attributes"]
+
+[types.field_overrides]
+data = { format = "bytes" }
+
+[[types]]
+schema = "AppEngineHttpTarget"
+include_fields = ["appEngineRouting", "relativeUri", "headers", "body"]
+
+[types.field_overrides]
+body = { format = "bytes" }
+
+[[types]]
+schema = "AppEngineRouting"
+include_fields = ["service", "version", "instance", "host"]
+
+[[types]]
+schema = "RetryConfig"
+include_fields = ["retryCount", "maxRetryDuration", "minBackoffDuration", "maxBackoffDuration", "maxDoublings"]
+
+[[types]]
+schema = "Status"
+rust_name = "JobStatus"
+include_fields = ["code", "message"]
+
+[[types]]
+schema = "Empty"
+rust_name = "SchedulerEmpty"
+
+[[types]]
+schema = "PauseJobRequest"
+
+[[types]]
+schema = "ResumeJobRequest"
+
+[[types]]
+schema = "RunJobRequest"
+
+# --- Operations ---
+
+# Jobs CRUD
+[[operations]]
+discovery_method = "projects.locations.jobs.create"
+rust_name = "create_job"
+description = "Creates a job."
+
+[[operations]]
+discovery_method = "projects.locations.jobs.get"
+rust_name = "get_job"
+description = "Gets a job."
+
+[[operations]]
+discovery_method = "projects.locations.jobs.list"
+rust_name = "list_jobs"
+description = "Lists jobs."
+list_response = { type_name = "ListJobsResponse", items_field = "jobs", item_type = "Job" }
+
+[[operations]]
+discovery_method = "projects.locations.jobs.patch"
+rust_name = "update_job"
+description = "Updates a job."
+query_params = ["updateMask"]
+
+[[operations]]
+discovery_method = "projects.locations.jobs.delete"
+rust_name = "delete_job"
+description = "Deletes a job."
+
+# Jobs Actions
+[[operations]]
+discovery_method = "projects.locations.jobs.pause"
+rust_name = "pause_job"
+description = "Pauses a job."
+
+[[operations]]
+discovery_method = "projects.locations.jobs.resume"
+rust_name = "resume_job"
+description = "Resumes a paused job."
+
+[[operations]]
+discovery_method = "projects.locations.jobs.run"
+rust_name = "run_job"
+description = "Forces a job to run now."
+
+# === Omitted ===
+# [types.omitted]
+# CmekConfig - CMEK configuration, advanced feature
+# Location - location discovery, not needed for job management
+# Operation - only used for CMEK updates, not job operations

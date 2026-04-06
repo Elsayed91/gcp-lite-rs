@@ -1,0 +1,141 @@
+# Cloud KMS API - Codegen Manifest
+# Operations needed for GCP CIS benchmark checks:
+#   - iam_kms_public_access (CIS 1.9): GetIamPolicy, SetIamPolicy on CryptoKey
+#   - iam_kms_key_rotation (CIS 1.10): GetCryptoKey / ListCryptoKeys (check rotationPeriod), UpdateCryptoKey
+
+[api]
+name = "cloudkms"
+display_name = "Cloud KMS API"
+version = "v1"
+discovery_url = "https://www.googleapis.com/discovery/v1/apis/cloudkms/v1/rest"
+base_url = "https://cloudkms.googleapis.com"
+doc_url = "https://cloud.google.com/kms/"
+
+[api.client]
+accessor_name = "kms"
+client_struct = "KmsClient"
+
+[api.path_helpers]
+project_name = "projects/{project}"
+location_name = "projects/{project}/locations/{location}"
+key_ring_name = "projects/{project}/locations/{location}/keyRings/{key_ring}"
+crypto_key_name = "projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}"
+
+# --- Types ---
+
+[[types]]
+schema = "Location"
+include_fields = ["name", "locationId", "displayName", "labels"]
+
+[types.field_overrides]
+name = { required = true }
+locationId = { required = true }
+
+[[types]]
+schema = "KeyRing"
+include_fields = ["name", "createTime"]
+
+[types.field_overrides]
+name = { required = true }
+
+[[types]]
+schema = "CryptoKeyVersionTemplate"
+include_fields = ["protectionLevel", "algorithm"]
+
+[[types]]
+schema = "CryptoKeyVersion"
+include_fields = ["name", "state", "algorithm", "protectionLevel", "createTime"]
+
+[types.field_overrides]
+name = { required = true }
+
+[[types]]
+schema = "CryptoKey"
+include_fields = ["name", "purpose", "createTime", "nextRotationTime", "rotationPeriod", "labels", "primary", "versionTemplate", "importOnly"]
+
+[types.field_overrides]
+name = { required = true }
+
+[[types]]
+schema = "Expr"
+include_fields = ["expression", "title", "description", "location"]
+
+[[types]]
+schema = "Binding"
+include_fields = ["role", "members", "condition"]
+
+[types.field_overrides]
+role = { required = true }
+
+[[types]]
+schema = "AuditLogConfig"
+include_fields = ["logType", "exemptedMembers"]
+
+[[types]]
+schema = "AuditConfig"
+include_fields = ["service", "auditLogConfigs"]
+
+[[types]]
+schema = "Policy"
+include_fields = ["version", "bindings", "auditConfigs", "etag"]
+
+[[types]]
+schema = "SetIamPolicyRequest"
+include_fields = ["policy", "updateMask"]
+
+[types.field_overrides]
+policy = { required = true }
+
+# --- Operations ---
+
+[[operations]]
+discovery_method = "projects.locations.list"
+rust_name = "list_locations"
+description = "Lists KMS locations for a project."
+query_params = ["pageSize", "pageToken", "filter"]
+list_response = { type_name = "ListLocationsResponse", items_field = "locations", item_type = "Location" }
+
+[[operations]]
+discovery_method = "projects.locations.keyRings.list"
+rust_name = "list_key_rings"
+description = "Lists key rings in a location."
+query_params = ["pageSize", "pageToken", "filter"]
+list_response = { type_name = "ListKeyRingsResponse", items_field = "keyRings", item_type = "KeyRing" }
+
+[[operations]]
+discovery_method = "projects.locations.keyRings.get"
+rust_name = "get_key_ring"
+description = "Returns metadata for a given KeyRing."
+
+[[operations]]
+discovery_method = "projects.locations.keyRings.cryptoKeys.list"
+rust_name = "list_crypto_keys"
+description = "Lists CryptoKeys in a key ring."
+query_params = ["pageSize", "pageToken", "filter"]
+list_response = { type_name = "ListCryptoKeysResponse", items_field = "cryptoKeys", item_type = "CryptoKey" }
+
+[[operations]]
+discovery_method = "projects.locations.keyRings.cryptoKeys.get"
+rust_name = "get_crypto_key"
+description = "Returns metadata for a given CryptoKey."
+
+[[operations]]
+discovery_method = "projects.locations.keyRings.getIamPolicy"
+rust_name = "get_key_ring_iam_policy"
+description = "Gets the IAM access control policy for a KeyRing."
+
+[[operations]]
+discovery_method = "projects.locations.keyRings.cryptoKeys.getIamPolicy"
+rust_name = "get_crypto_key_iam_policy"
+description = "Gets the IAM access control policy for a CryptoKey."
+
+[[operations]]
+discovery_method = "projects.locations.keyRings.cryptoKeys.setIamPolicy"
+rust_name = "set_crypto_key_iam_policy"
+description = "Sets the IAM access control policy for a CryptoKey."
+
+[[operations]]
+discovery_method = "projects.locations.keyRings.cryptoKeys.patch"
+rust_name = "update_crypto_key"
+description = "Updates a CryptoKey (e.g. rotation schedule)."
+query_params = ["updateMask"]

@@ -1,0 +1,628 @@
+# Compute Engine API - Codegen Manifest
+# Defines which types and operations to generate from the GCP discovery document.
+
+[api]
+name = "compute"
+display_name = "Compute Engine"
+version = "v1"
+discovery_url = "https://www.googleapis.com/discovery/v1/apis/compute/v1/rest"
+base_url = "https://compute.googleapis.com/compute/v1"
+doc_url = "https://cloud.google.com/compute/docs/reference/rest/v1"
+
+[api.client]
+accessor_name = "compute"
+client_struct = "ComputeClient"
+
+[api.lro]
+pattern = "selflink"
+response_type = "OperationResponse"
+poll_config = "disk_operation"
+
+# --- Types ---
+
+[[types]]
+schema = "Disk"
+include_fields = [
+    "name", "sizeGb", "type", "zone", "status", "selfLink",
+    "sourceSnapshot", "sourceImage", "id", "creationTimestamp",
+    "description", "labels", "labelFingerprint", "physicalBlockSizeBytes",
+    "users", "lastAttachTimestamp", "lastDetachTimestamp",
+    "enableConfidentialCompute", "provisionedIops",
+    "diskEncryptionKey", "guestOsFeatures", "resourcePolicies",
+    "region", "replicaZones", "kind",
+]
+
+[types.field_overrides]
+name = { required = true }
+type = { rust_name = "disk_type", serde_rename = "type" }
+status = { enum_type = "DiskStatus" }
+
+[types.omitted]
+sourceDisk = "Source disk cloning - uncommon operation"
+sourceImageEncryptionKey = "CMEK for source image - niche use case"
+sourceSnapshotEncryptionKey = "CMEK for source snapshot - niche use case"
+sourceStorageObject = "Import from Cloud Storage - niche use case"
+licenseCodes = "License tracking - read-only metadata"
+licenses = "License tracking - read-only metadata"
+satisfiesPzs = "Placement zone storage - enterprise feature"
+satisfiesPzi = "Placement zone isolation - enterprise feature"
+provisionedThroughput = "Hyperdisk throughput provisioning"
+resourceStatus = "Async replication status - niche feature"
+
+[[types]]
+schema = "CustomerEncryptionKey"
+rust_name = "DiskEncryptionKey"
+include_fields = ["rawKey", "kmsKeyName", "sha256"]
+
+[[types]]
+schema = "GuestOsFeature"
+include_fields = ["type"]
+
+[types.field_overrides]
+type = { rust_name = "feature_type", serde_rename = "type" }
+
+[[types]]
+schema = "Instance"
+include_fields = [
+    "name", "canIpForward", "confidentialInstanceConfig", "cpuPlatform",
+    "creationTimestamp", "deletionProtection", "description", "disks",
+    "displayDevice", "fingerprint", "id", "keyRevocationActionType",
+    "kind", "labelFingerprint", "labels", "lastStartTimestamp",
+    "lastStopTimestamp", "machineType", "metadata", "networkInterfaces",
+    "reservationAffinity", "satisfiesPzi", "scheduling", "selfLink",
+    "serviceAccounts", "shieldedInstanceConfig",
+    "shieldedInstanceIntegrityPolicy", "sourceMachineImage",
+    "startRestricted", "status", "tags", "zone",
+]
+
+[types.field_overrides]
+name = { required = true }
+status = { enum_type = "InstanceStatus" }
+
+[types.omitted]
+advancedMachineFeatures = "Advanced CPU/NUMA features"
+guestAccelerators = "GPU attachment - use dedicated GPU API"
+params = "Resource manager tags - niche"
+resourcePolicies = "Scheduled operations - niche"
+resourceStatus = "Scheduling/physical host status"
+sourceMachineImageEncryptionKey = "CMEK for machine images"
+
+[[types]]
+schema = "AttachedDisk"
+include_fields = [
+    "architecture", "autoDelete", "boot", "deviceName", "diskSizeGb",
+    "guestOsFeatures", "index", "interface", "kind", "licenses",
+    "mode", "source", "type",
+]
+
+[types.field_overrides]
+interface = { rust_name = "interface_type", serde_rename = "interface" }
+type = { rust_name = "disk_type", serde_rename = "type" }
+
+[[types]]
+schema = "NetworkInterface"
+include_fields = [
+    "accessConfigs", "fingerprint", "kind", "name", "network",
+    "networkIP", "stackType", "subnetwork",
+]
+
+[[types]]
+schema = "AccessConfig"
+include_fields = ["kind", "name", "natIP", "networkTier", "type"]
+
+[types.field_overrides]
+type = { rust_name = "access_type", serde_rename = "type" }
+
+[[types]]
+schema = "Metadata"
+include_fields = ["fingerprint", "items"]
+
+[types.field_overrides]
+items = { inline_struct = "MetadataItem" }
+
+[[types]]
+schema = "Tags"
+include_fields = ["items", "fingerprint"]
+
+[[types]]
+schema = "ServiceAccount"
+include_fields = ["email", "scopes"]
+
+[types.field_overrides]
+email = { required = true }
+
+[[types]]
+schema = "Scheduling"
+include_fields = [
+    "automaticRestart", "instanceTerminationAction",
+    "onHostMaintenance", "preemptible", "provisioningModel",
+]
+
+[[types]]
+schema = "Snapshot"
+include_fields = [
+    "name", "autoCreated", "chainName", "creationSizeBytes",
+    "creationTimestamp", "description", "diskSizeGb", "downloadBytes",
+    "enableConfidentialCompute", "guestOsFeatures", "id", "kind",
+    "labelFingerprint", "labels", "licenseCodes", "licenses",
+    "selfLink", "snapshotEncryptionKey", "snapshotType", "sourceDisk",
+    "sourceDiskEncryptionKey", "sourceDiskId", "status",
+    "storageBytes", "storageBytesStatus", "storageLocations",
+]
+
+[types.field_overrides]
+name = { required = true }
+status = { enum_type = "SnapshotStatus" }
+
+[[types]]
+schema = "Operation"
+rust_name = "OperationResponse"
+include_fields = ["name", "operationType", "status", "targetLink", "selfLink"]
+
+[types.field_overrides]
+name = { required = true }
+
+# --- Address Types ---
+
+[[types]]
+schema = "Address"
+include_fields = [
+    "name", "address", "addressType", "creationTimestamp", "description",
+    "id", "kind", "labels", "labelFingerprint", "network", "networkTier",
+    "prefixLength", "purpose", "region", "selfLink", "status",
+    "subnetwork", "users",
+]
+
+[types.field_overrides]
+name = { required = true }
+status = { enum_type = "AddressStatus" }
+
+# --- Router Types ---
+
+[[types]]
+schema = "Router"
+include_fields = [
+    "name", "creationTimestamp", "description", "id", "kind",
+    "nats", "network", "region", "selfLink",
+]
+
+[types.field_overrides]
+name = { required = true }
+
+[[types]]
+schema = "RouterNat"
+include_fields = [
+    "name", "natIpAllocateOption", "sourceSubnetworkIpRangesToNat",
+    "natIps", "drainNatIps", "minPortsPerVm", "maxPortsPerVm",
+    "enableEndpointIndependentMapping", "enableDynamicPortAllocation",
+    "logConfig", "type", "autoNetworkTier", "subnetworks",
+    "udpIdleTimeoutSec", "tcpEstablishedIdleTimeoutSec",
+    "tcpTransitoryIdleTimeoutSec", "tcpTimeWaitTimeoutSec",
+    "icmpIdleTimeoutSec", "endpointTypes",
+]
+
+[types.field_overrides]
+name = { required = true }
+type = { rust_name = "nat_type", serde_rename = "type" }
+
+[[types]]
+schema = "RouterNatLogConfig"
+include_fields = ["enable", "filter"]
+
+[[types]]
+schema = "RouterNatSubnetworkToNat"
+include_fields = ["name", "sourceIpRangesToNat", "secondaryIpRangeNames"]
+
+# --- Backend Service Types ---
+
+[[types]]
+schema = "BackendService"
+include_fields = [
+    "name", "backends", "creationTimestamp", "description", "fingerprint",
+    "healthChecks", "id", "kind", "loadBalancingScheme", "logConfig",
+    "network", "port", "portName", "protocol", "region", "selfLink",
+    "sessionAffinity", "timeoutSec", "connectionDraining",
+]
+
+[types.field_overrides]
+name = { required = true }
+
+[types.omitted]
+cdnPolicy = "CDN configuration - advanced feature"
+circuitBreakers = "Traffic management - advanced"
+consistentHash = "Session affinity - advanced"
+customRequestHeaders = "Custom headers - advanced"
+customResponseHeaders = "Custom headers - advanced"
+failoverPolicy = "Failover - enterprise feature"
+iap = "Identity-Aware Proxy - separate concern"
+localityLbPolicies = "Advanced load balancing"
+outlierDetection = "Traffic management - advanced"
+securityPolicy = "Security policy - separate concern"
+securitySettings = "mTLS - advanced"
+subsetting = "Subsetting - advanced"
+tlsSettings = "Backend TLS - advanced"
+
+[[types]]
+schema = "Backend"
+include_fields = [
+    "balancingMode", "capacityScaler", "description", "failover",
+    "group", "maxConnections", "maxConnectionsPerEndpoint",
+    "maxConnectionsPerInstance", "maxRate", "maxRatePerEndpoint",
+    "maxRatePerInstance", "maxUtilization",
+]
+
+[[types]]
+schema = "BackendServiceLogConfig"
+include_fields = ["enable", "sampleRate"]
+
+[[types]]
+schema = "ConnectionDraining"
+include_fields = ["drainingTimeoutSec"]
+
+# --- Firewall Types ---
+
+[[types]]
+schema = "Firewall"
+include_fields = [
+    "name", "description", "network", "direction", "priority",
+    "allowed", "denied", "sourceRanges", "destinationRanges",
+    "sourceTags", "targetTags", "sourceServiceAccounts",
+    "targetServiceAccounts", "disabled", "selfLink", "id",
+    "creationTimestamp", "kind",
+]
+
+[types.field_overrides]
+name = { required = true }
+direction = { enum_type = "FirewallDirection" }
+allowed = { inline_struct = "FirewallAllowed" }
+denied = { inline_struct = "FirewallDenied" }
+
+[types.omitted]
+logConfig = "Firewall logging config - can add later"
+params = "Resource manager tags - niche"
+
+# --- Request Types ---
+
+[[types]]
+schema = "DisksResizeRequest"
+include_fields = ["sizeGb"]
+
+[[types]]
+schema = "InstancesSetMachineTypeRequest"
+include_fields = ["machineType"]
+
+[types.field_overrides]
+machineType = { required = true }
+
+# --- Operations ---
+
+[[operations]]
+discovery_resource = "disks"
+discovery_method = "insert"
+rust_name = "create_disk"
+is_lro = true
+
+[[operations]]
+discovery_resource = "disks"
+discovery_method = "delete"
+rust_name = "delete_disk"
+is_lro = true
+
+[[operations]]
+discovery_resource = "disks"
+discovery_method = "get"
+rust_name = "get_disk"
+
+[[operations]]
+discovery_resource = "disks"
+discovery_method = "list"
+rust_name = "list_disks"
+list_response = { type_name = "DiskList", items_field = "items", item_type = "Disk" }
+query_params = ["pageToken"]
+
+[[operations]]
+discovery_resource = "disks"
+discovery_method = "createSnapshot"
+rust_name = "create_snapshot"
+is_lro = true
+
+[[operations]]
+discovery_resource = "instances"
+discovery_method = "insert"
+rust_name = "create_instance"
+is_lro = true
+
+[[operations]]
+discovery_resource = "instances"
+discovery_method = "delete"
+rust_name = "delete_instance"
+is_lro = true
+
+[[operations]]
+discovery_resource = "instances"
+discovery_method = "get"
+rust_name = "get_instance"
+
+[[operations]]
+discovery_resource = "instances"
+discovery_method = "list"
+rust_name = "list_instances"
+list_response = { type_name = "InstanceList", items_field = "items", item_type = "Instance" }
+query_params = ["pageToken"]
+
+[[operations]]
+discovery_resource = "instances"
+discovery_method = "start"
+rust_name = "start_instance"
+is_lro = true
+
+[[operations]]
+discovery_resource = "instances"
+discovery_method = "stop"
+rust_name = "stop_instance"
+is_lro = true
+
+[[operations]]
+discovery_resource = "instances"
+discovery_method = "reset"
+rust_name = "reset_instance"
+is_lro = true
+
+[[operations]]
+discovery_resource = "snapshots"
+discovery_method = "delete"
+rust_name = "delete_snapshot"
+is_lro = true
+
+[[operations]]
+discovery_resource = "snapshots"
+discovery_method = "get"
+rust_name = "get_snapshot"
+
+[[operations]]
+discovery_resource = "snapshots"
+discovery_method = "list"
+rust_name = "list_snapshots"
+list_response = { type_name = "SnapshotList", items_field = "items", item_type = "Snapshot" }
+query_params = ["pageToken"]
+
+# --- Address Operations ---
+
+[[operations]]
+discovery_resource = "addresses"
+discovery_method = "delete"
+rust_name = "release_address"
+is_lro = true
+
+[[operations]]
+discovery_resource = "addresses"
+discovery_method = "get"
+rust_name = "get_address"
+
+[[operations]]
+discovery_resource = "addresses"
+discovery_method = "list"
+rust_name = "list_addresses"
+list_response = { type_name = "AddressList", items_field = "items", item_type = "Address" }
+query_params = ["pageToken"]
+
+# --- Router Operations ---
+
+[[operations]]
+discovery_resource = "routers"
+discovery_method = "get"
+rust_name = "get_router"
+
+[[operations]]
+discovery_resource = "routers"
+discovery_method = "patch"
+rust_name = "patch_router"
+is_lro = true
+
+# --- Instance Extensions ---
+
+[[operations]]
+discovery_resource = "instances"
+discovery_method = "deleteAccessConfig"
+rust_name = "remove_access_config"
+is_lro = true
+query_params = ["accessConfig", "networkInterface"]
+
+[[operations]]
+discovery_resource = "instances"
+discovery_method = "setDiskAutoDelete"
+rust_name = "set_disk_auto_delete"
+is_lro = true
+query_params = ["autoDelete", "deviceName"]
+
+[[operations]]
+discovery_resource = "instances"
+discovery_method = "setMachineType"
+rust_name = "set_machine_type"
+is_lro = true
+
+# --- Disk Extensions ---
+
+[[operations]]
+discovery_resource = "disks"
+discovery_method = "resize"
+rust_name = "resize_disk"
+is_lro = true
+
+# --- Backend Service Operations (Global) ---
+
+[[operations]]
+discovery_resource = "backendServices"
+discovery_method = "get"
+rust_name = "get_global_backend_service"
+
+[[operations]]
+discovery_resource = "backendServices"
+discovery_method = "list"
+rust_name = "list_global_backend_services"
+list_response = { type_name = "BackendServiceList", items_field = "items", item_type = "BackendService" }
+query_params = ["pageToken"]
+
+[[operations]]
+discovery_resource = "backendServices"
+discovery_method = "insert"
+rust_name = "create_global_backend_service"
+is_lro = true
+
+[[operations]]
+discovery_resource = "backendServices"
+discovery_method = "delete"
+rust_name = "delete_global_backend_service"
+is_lro = true
+
+[[operations]]
+discovery_resource = "backendServices"
+discovery_method = "patch"
+rust_name = "patch_global_backend_service"
+is_lro = true
+
+# --- Backend Service Operations (Regional) ---
+
+[[operations]]
+discovery_resource = "regionBackendServices"
+discovery_method = "get"
+rust_name = "get_regional_backend_service"
+
+[[operations]]
+discovery_resource = "regionBackendServices"
+discovery_method = "list"
+rust_name = "list_regional_backend_services"
+list_response = { type_name = "BackendServiceList", items_field = "items", item_type = "BackendService" }
+query_params = ["pageToken"]
+
+[[operations]]
+discovery_resource = "regionBackendServices"
+discovery_method = "delete"
+rust_name = "delete_regional_backend_service"
+is_lro = true
+
+# --- Instance Scheduling ---
+
+[[operations]]
+discovery_resource = "instances"
+discovery_method = "setScheduling"
+rust_name = "set_scheduling"
+is_lro = true
+
+# --- Firewall Operations ---
+
+[[operations]]
+discovery_resource = "firewalls"
+discovery_method = "get"
+rust_name = "get_firewall"
+
+[[operations]]
+discovery_resource = "firewalls"
+discovery_method = "list"
+rust_name = "list_firewalls"
+list_response = { type_name = "FirewallList", items_field = "items", item_type = "Firewall" }
+query_params = ["pageToken"]
+
+[[operations]]
+discovery_resource = "firewalls"
+discovery_method = "delete"
+rust_name = "delete_firewall"
+is_lro = true
+
+[[operations]]
+discovery_resource = "firewalls"
+discovery_method = "patch"
+rust_name = "patch_firewall"
+is_lro = true
+
+# --- New ops for CIS 4.x (Instance Metadata, Service Account, Shielded VM) ---
+
+[[types]]
+schema = "InstancesSetServiceAccountRequest"
+rust_name = "InstancesSetServiceAccountRequest"
+include_fields = ["email", "scopes"]
+
+[types.field_overrides]
+email = { required = true }
+
+[[types]]
+schema = "SubnetworkLogConfig"
+rust_name = "SubnetworkLogConfig"
+include_fields = ["enable", "aggregationInterval", "flowSampling", "metadata"]
+
+[[types]]
+schema = "Subnetwork"
+rust_name = "Subnetwork"
+include_fields = ["name", "fingerprint", "enableFlowLogs", "logConfig", "privateIpGoogleAccess", "description", "region", "network", "selfLink", "id"]
+
+[[types]]
+schema = "SslPolicy"
+rust_name = "SslPolicy"
+include_fields = ["name", "profile", "minTlsVersion", "customFeatures", "fingerprint", "id", "selfLink", "enabledFeatures", "description"]
+
+[types.field_overrides]
+name = { required = true }
+
+[[types]]
+schema = "SslPoliciesList"
+rust_name = "SslPoliciesList"
+include_fields = ["items", "nextPageToken"]
+
+[[operations]]
+discovery_resource = "instances"
+discovery_method = "setMetadata"
+rust_name = "set_instance_metadata"
+description = "Sets metadata for the specified instance (SSH keys, OS Login, serial port, etc.)."
+is_lro = true
+
+[[operations]]
+discovery_resource = "projects"
+discovery_method = "setCommonInstanceMetadata"
+rust_name = "set_project_common_instance_metadata"
+description = "Sets metadata common to all instances within the specified project."
+is_lro = true
+
+[[operations]]
+discovery_resource = "instances"
+discovery_method = "setServiceAccount"
+rust_name = "set_instance_service_account"
+description = "Sets the service account on the instance."
+is_lro = true
+
+[[operations]]
+discovery_resource = "instances"
+discovery_method = "updateShieldedInstanceConfig"
+rust_name = "update_shielded_instance_config"
+description = "Updates the Shielded Instance config for an instance."
+is_lro = true
+
+# --- New ops for CIS 3.x (Networks, Subnetworks, SSL Policies) ---
+
+[[operations]]
+discovery_resource = "networks"
+discovery_method = "delete"
+rust_name = "delete_network"
+description = "Deletes the specified network."
+is_lro = true
+
+[[operations]]
+discovery_resource = "subnetworks"
+discovery_method = "patch"
+rust_name = "patch_subnetwork"
+description = "Patches the specified subnetwork with the supplied patch."
+is_lro = true
+
+[[operations]]
+discovery_resource = "sslPolicies"
+discovery_method = "list"
+rust_name = "list_ssl_policies"
+description = "Lists all the SSL policies that have been configured for the specified project."
+query_params = ["pageToken", "filter"]
+list_response = { type_name = "SslPoliciesList", items_field = "items", item_type = "SslPolicy" }
+
+[[operations]]
+discovery_resource = "sslPolicies"
+discovery_method = "patch"
+rust_name = "patch_ssl_policy"
+description = "Patches the specified SSL policy with the data included in the request."
+is_lro = true

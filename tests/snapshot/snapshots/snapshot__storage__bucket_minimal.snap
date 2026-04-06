@@ -1,0 +1,7 @@
+---
+source: tests/snapshot/storage.rs
+expression: bucket
+---
+{
+  "name": "my-bucket"
+}

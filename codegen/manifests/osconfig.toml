@@ -1,0 +1,52 @@
+# OS Config API - Codegen Manifest
+# Operations needed for GCP CIS benchmark checks:
+#   - compute_os_patches (CIS 4.12): verify OS patching is configured and active
+#     via patch deployments and VM inventory collection.
+
+[api]
+name = "osconfig"
+display_name = "OS Config API"
+version = "v1"
+discovery_url = "https://www.googleapis.com/discovery/v1/apis/osconfig/v1/rest"
+base_url = "https://osconfig.googleapis.com"
+doc_url = "https://cloud.google.com/compute/docs/osconfig/rest"
+
+[api.client]
+accessor_name = "osconfig"
+client_struct = "OsConfigClient"
+
+# --- Types ---
+
+[[types]]
+schema = "InventoryOsInfo"
+include_fields = ["hostname", "longName", "shortName", "version", "architecture", "kernelVersion", "osconfigAgentVersion"]
+
+[[types]]
+schema = "Inventory"
+include_fields = ["name", "osInfo", "updateTime"]
+
+[types.field_overrides]
+name = { required = true }
+
+[[types]]
+schema = "PatchDeployment"
+include_fields = ["name", "description", "state", "createTime", "updateTime", "lastExecuteTime"]
+
+[types.field_overrides]
+name = { required = true }
+
+# --- Operations ---
+
+[[operations]]
+discovery_method = "projects.patchDeployments.list"
+rust_name = "list_patch_deployments"
+description = "List OS Config patch deployments for a project. Used to verify OS patching is configured."
+query_params = ["pageSize", "pageToken"]
+list_response = { type_name = "ListPatchDeploymentsResponse", items_field = "patchDeployments", item_type = "PatchDeployment" }
+
+[[operations]]
+discovery_method = "projects.locations.instances.inventories.list"
+rust_name = "list_inventories"
+description = "List OS inventory data for VM instances in a project/location. Use locations/-/instances/- to aggregate across all locations."
+query_params = ["pageSize", "pageToken", "view", "filter"]
+list_response = { type_name = "ListInventoriesResponse", items_field = "inventories", item_type = "Inventory" }

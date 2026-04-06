@@ -1,0 +1,103 @@
+# Cloud Asset API - Codegen Manifest
+# Asset inventory, search, and IAM policy operations.
+
+[api]
+name = "cloudasset"
+display_name = "Cloud Asset"
+version = "v1"
+discovery_url = "https://www.googleapis.com/discovery/v1/apis/cloudasset/v1/rest"
+base_url = "https://cloudasset.googleapis.com"
+doc_url = "https://cloud.google.com/asset-inventory/docs"
+
+[api.client]
+accessor_name = "cloud_asset"
+client_struct = "CloudAssetClient"
+
+# No LRO section - all operations are synchronous
+
+# --- Types ---
+
+[[types]]
+schema = "Asset"
+include_fields = ["name", "assetType", "updateTime", "ancestors", "resource", "iamPolicy"]
+
+[[types]]
+schema = "Resource"
+include_fields = ["parent", "data", "location", "version", "discoveryName", "discoveryDocumentUri", "resourceUrl"]
+
+[types.field_overrides]
+data = { rust_type = "serde_json::Value" }
+
+[[types]]
+schema = "ResourceSearchResult"
+include_fields = [
+    "name", "assetType", "project", "folders", "organization",
+    "displayName", "description", "location", "labels", "networkTags",
+    "state", "createTime", "updateTime", "parentFullResourceName", "parentAssetType"
+]
+
+[types.field_overrides]
+labels = { rust_type = "HashMap<String, String>" }
+
+[[types]]
+schema = "ListAssetsResponse"
+include_fields = ["assets", "readTime", "nextPageToken"]
+
+[[types]]
+schema = "SearchAllResourcesResponse"
+include_fields = ["results", "nextPageToken"]
+
+# IAM Policy types (same schema as cloudresourcemanager but in cloudasset namespace)
+
+[[types]]
+schema = "Policy"
+include_fields = ["bindings", "etag", "version", "auditConfigs"]
+
+[[types]]
+schema = "Binding"
+include_fields = ["role", "members", "condition"]
+
+[[types]]
+schema = "Expr"
+include_fields = ["expression", "title", "description"]
+
+[[types]]
+schema = "AuditConfig"
+include_fields = ["service", "auditLogConfigs"]
+
+[[types]]
+schema = "AuditLogConfig"
+include_fields = ["logType", "exemptedMembers"]
+
+# IAM Policy search types
+
+[[types]]
+schema = "IamPolicySearchResult"
+include_fields = ["resource", "assetType", "policy", "project", "folders", "organization"]
+
+[[types]]
+schema = "SearchAllIamPoliciesResponse"
+include_fields = ["results", "nextPageToken"]
+
+# --- Operations ---
+# NOTE: list_assets is intentionally NOT here. The GCP endpoint requires
+# `assetTypes` as repeated query params (assetTypes=A&assetTypes=B) plus
+# `contentType` as an enum. The API layer handles list_assets directly.
+
+[[operations]]
+discovery_resource = "v1"
+discovery_method = "searchAllResources"
+rust_name = "search_all_resources"
+description = "Searches all Google Cloud resources within the specified scope."
+list_response = { type_name = "SearchAllResourcesResponse", items_field = "results", item_type = "ResourceSearchResult" }
+# assetTypes is repeated: true in discovery doc — codegen generates &[&str] + loop-based URL
+query_params = ["query", "assetTypes", "pageSize", "pageToken", "orderBy", "readMask"]
+
+[[operations]]
+discovery_resource = "v1"
+discovery_method = "searchAllIamPolicies"
+rust_name = "search_all_iam_policies"
+description = "Searches all IAM policies within the specified scope."
+list_response = { type_name = "SearchAllIamPoliciesResponse", items_field = "results", item_type = "IamPolicySearchResult" }
+# assetTypes is repeated: true in discovery doc — codegen generates &[&str] + loop-based URL
+query_params = ["query", "assetTypes", "pageSize", "pageToken", "orderBy"]

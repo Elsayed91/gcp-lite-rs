@@ -1,0 +1,54 @@
+# App Engine Admin API - Codegen Manifest
+# Operations needed for GCP CIS benchmark checks:
+#   - compute_app_engine_https (CIS 4.10): check if services enforce HTTPS (ingressTrafficAllowed / sslPolicy)
+
+[api]
+name = "appengine"
+display_name = "App Engine Admin API"
+version = "v1"
+discovery_url = "https://www.googleapis.com/discovery/v1/apis/appengine/v1/rest"
+base_url = "https://appengine.googleapis.com"
+doc_url = "https://cloud.google.com/appengine/docs/admin-api/"
+
+[api.client]
+accessor_name = "appengine"
+client_struct = "AppEngineClient"
+
+# --- Types ---
+
+[[types]]
+schema = "Application"
+include_fields = ["authDomain", "defaultHostname", "id", "locationId", "name", "servingStatus", "sslPolicy"]
+
+[types.field_overrides]
+name = { required = true }
+
+[[types]]
+schema = "NetworkSettings"
+include_fields = ["ingressTrafficAllowed"]
+
+[[types]]
+schema = "Service"
+include_fields = ["id", "labels", "name", "networkSettings"]
+
+[types.field_overrides]
+name = { required = true }
+
+# --- Operations ---
+
+[[operations]]
+discovery_method = "apps.get"
+rust_name = "get_app"
+description = "Gets information about an App Engine application. The app ID equals the GCP project ID."
+
+[[operations]]
+discovery_method = "apps.services.list"
+rust_name = "list_services"
+description = "Lists all the services in an App Engine application."
+query_params = ["pageSize", "pageToken"]
+list_response = { type_name = "ListServicesResponse", items_field = "services", item_type = "Service" }
+
+[[operations]]
+discovery_method = "apps.services.get"
+rust_name = "get_service"
+description = "Gets the current configuration of the specified service."

@@ -1,0 +1,114 @@
+# Cloud DNS API - Codegen Manifest
+# Needed by: vpc_dnssec_enabled (3.3), vpc_dnssec_no_rsasha1_ksk (3.4),
+#            vpc_dnssec_no_rsasha1_zsk (3.5), vpc_dns_logging (2.12)
+
+[api]
+name = "dns"
+display_name = "Cloud DNS API"
+version = "v1"
+discovery_url = "https://www.googleapis.com/discovery/v1/apis/dns/v1/rest"
+base_url = "https://dns.googleapis.com"
+doc_url = "https://cloud.google.com/dns/docs"
+
+[api.client]
+accessor_name = "dns"
+client_struct = "DnsClient"
+
+# --- Types ---
+
+[[types]]
+schema = "ManagedZoneDnsSecConfig"
+include_fields = ["state", "nonExistence", "defaultKeySpecs"]
+
+[[types]]
+schema = "DnsKeySpec"
+include_fields = ["keyType", "algorithm", "keyLength"]
+
+[[types]]
+schema = "ManagedZoneCloudLoggingConfig"
+include_fields = ["enableLogging"]
+
+[[types]]
+schema = "ManagedZone"
+include_fields = ["name", "dnsName", "description", "id", "dnssecConfig", "cloudLoggingConfig", "visibility", "nameServers"]
+
+[types.field_overrides]
+name = { required = true }
+
+[[types]]
+schema = "ManagedZonesListResponse"
+include_fields = ["managedZones", "nextPageToken"]
+
+[[types]]
+schema = "PolicyNetwork"
+include_fields = ["networkUrl"]
+
+[[types]]
+schema = "Policy"
+include_fields = ["name", "id", "description", "enableInboundForwarding", "enableLogging", "networks"]
+
+[types.field_overrides]
+name = { required = true }
+
+[[types]]
+schema = "PoliciesListResponse"
+include_fields = ["policies", "nextPageToken"]
+
+[[types]]
+schema = "PoliciesPatchResponse"
+include_fields = ["policy"]
+
+[[types]]
+schema = "Operation"
+rust_name = "DnsOperation"
+include_fields = ["id", "status", "kind"]
+
+# --- Operations ---
+
+# Managed Zones
+
+[[operations]]
+discovery_method = "managedZones.get"
+rust_name = "get_managed_zone"
+description = "Fetches the representation of an existing ManagedZone."
+
+[[operations]]
+discovery_method = "managedZones.list"
+rust_name = "list_managed_zones"
+description = "Enumerates ManagedZones that have been created but not yet deleted."
+query_params = ["maxResults", "pageToken", "dnsName"]
+list_response = { type_name = "ManagedZonesListResponse", items_field = "managedZones", item_type = "ManagedZone" }
+
+[[operations]]
+discovery_method = "managedZones.patch"
+rust_name = "patch_managed_zone"
+description = "Applies a partial update to an existing ManagedZone."
+
+# DNS Policies
+
+[[operations]]
+discovery_method = "policies.list"
+rust_name = "list_dns_policies"
+description = "Enumerates all policies associated with a project."
+query_params = ["maxResults", "pageToken"]
+list_response = { type_name = "PoliciesListResponse", items_field = "policies", item_type = "Policy" }
+
+[[operations]]
+discovery_method = "policies.get"
+rust_name = "get_dns_policy"
+description = "Fetches the representation of an existing policy."
+
+[[operations]]
+discovery_method = "policies.create"
+rust_name = "create_dns_policy"
+description = "Creates a new DNS policy."
+
+[[operations]]
+discovery_method = "policies.patch"
+rust_name = "patch_dns_policy"
+description = "Applies a partial update to an existing DNS policy."
+
+[[operations]]
+discovery_method = "policies.delete"
+rust_name = "delete_dns_policy"
+description = "Deletes a previously created DNS policy."

@@ -1,0 +1,14 @@
+---
+source: tests/snapshot/storage.rs
+expression: resp
+---
+{
+  "done": true,
+  "objectSize": "1000",
+  "resource": {
+    "bucket": "dst-bucket",
+    "name": "dest.bin",
+    "size": "1000"
+  },
+  "totalBytesRewritten": "1000"
+}

@@ -1,0 +1,104 @@
+# Kubernetes Engine API - Codegen Manifest
+# Curated for cluster list/get/delete operations.
+#
+# Container API uses project_location_name LRO pattern:
+#   Operations poll via GET /v1/{name} where name = projects/{p}/locations/{l}/operations/{op}
+#   Done when status == "DONE" (string), errors in error.message
+
+[api]
+name = "container"
+display_name = "Kubernetes Engine"
+version = "v1"
+discovery_url = "https://www.googleapis.com/discovery/v1/apis/container/v1/rest"
+base_url = "https://container.googleapis.com"
+doc_url = "https://cloud.google.com/kubernetes-engine/docs/"
+
+[api.client]
+accessor_name = "container"
+client_struct = "ContainerClient"
+
+[api.lro]
+pattern = "project_location_name"
+response_type = "ContainerLro"
+poll_config = "container_operation"
+base_url = "https://container.googleapis.com"
+api_version = "v1"
+
+# --- Types ---
+
+[[types]]
+schema = "Cluster"
+include_fields = [
+    "name",
+    "location",
+    "status",
+    "statusMessage",
+    "endpoint",
+    "currentMasterVersion",
+    "currentNodeCount",
+    "createTime",
+    "network",
+    "subnetwork",
+    "selfLink",
+    "description",
+    "resourceLabels",
+    "initialClusterVersion",
+    "releaseChannel",
+]
+
+[types.field_overrides]
+name = { required = true }
+status = { enum_type = "ClusterStatus" }
+
+[types.omitted]
+addonsConfig = "Complex nested config — not needed for basic cluster management"
+nodePools = "Complex nested type — use get for node pool details"
+nodeConfig = "Deprecated — use nodePools[].config instead"
+ipAllocationPolicy = "Advanced networking config"
+networkConfig = "Advanced networking config"
+privateClusterConfig = "Advanced networking config"
+masterAuthorizedNetworksConfig = "Advanced networking config"
+masterAuth = "Auth config — rarely needed at this level"
+loggingConfig = "Monitoring/logging config"
+monitoringConfig = "Monitoring/logging config"
+autoscaling = "Cluster-level autoscaling config"
+autopilot = "Autopilot mode config"
+workloadIdentityConfig = "Workload identity config"
+binaryAuthorization = "Security config"
+shieldedNodes = "Security config"
+securityPostureConfig = "Security config"
+
+[[types]]
+schema = "ListClustersResponse"
+include_fields = ["clusters", "missingZones"]
+
+[[types]]
+schema = "Operation"
+rust_name = "ContainerLro"
+include_fields = ["name", "status", "statusMessage", "error", "selfLink", "targetLink", "operationType"]
+
+[types.field_overrides]
+name = { required = true }
+error = { rust_type = "serde_json::Value" }
+
+# --- Operations ---
+# Using projects.locations.* endpoints (modern, preferred over zones endpoints).
+
+[[operations]]
+discovery_method = "projects.locations.clusters.list"
+rust_name = "list_clusters"
+description = "Lists all clusters in a project and location."
+
+[[operations]]
+discovery_method = "projects.locations.clusters.get"
+rust_name = "get_cluster"
+description = "Gets the details of a specific cluster."
+
+[[operations]]
+discovery_method = "projects.locations.clusters.delete"
+rust_name = "delete_cluster"
+description = "Deletes a cluster and all its worker nodes."
+is_lro = true
+
+# Note: operations.get is not needed — ContainerOperation in operation.rs
+# constructs the poll URL directly via GET /v1/{name}.

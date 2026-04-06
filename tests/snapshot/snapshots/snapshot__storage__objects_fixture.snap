@@ -1,0 +1,8 @@
+---
+source: tests/snapshot/storage.rs
+expression: "Objects::fixture()"
+---
+{
+  "kind": "test-kind",
+  "nextPageToken": "test-next_page_token"
+}

@@ -1,0 +1,164 @@
+# Cloud Resource Manager API - Codegen Manifest (v3)
+# Projects resource only — curated for feature parity with old ProjectsClient.
+
+[api]
+name = "cloudresourcemanager"
+display_name = "Cloud Resource Manager"
+version = "v3"
+discovery_url = "https://cloudresourcemanager.googleapis.com/$discovery/rest?version=v3"
+base_url = "https://cloudresourcemanager.googleapis.com"
+doc_url = "https://cloud.google.com/resource-manager/reference/rest/v3"
+
+[api.client]
+accessor_name = "projects"
+client_struct = "ProjectsClient"
+
+[api.lro]
+pattern = "name_based"
+response_type = "ProjectsLro"
+poll_config = "project_operation"
+operation_struct = "ResourceManagerOperation"
+base_url = "https://cloudresourcemanager.googleapis.com"
+poll_path = "/v3/{name}"
+
+# --- Types ---
+
+[[types]]
+schema = "Project"
+include_fields = ["name", "projectId", "displayName", "state", "parent", "labels", "createTime", "etag", "deleteTime"]
+
+[types.field_overrides]
+name = { required = true }
+state = { enum_type = "ProjectState" }
+
+[[types]]
+schema = "Policy"
+rust_name = "IamPolicy"
+include_fields = ["version", "bindings", "auditConfigs", "etag"]
+
+[[types]]
+schema = "Binding"
+rust_name = "IamBinding"
+include_fields = ["role", "members", "condition"]
+
+[[types]]
+schema = "Expr"
+rust_name = "IamCondition"
+include_fields = ["expression", "title", "description"]
+
+[[types]]
+schema = "AuditConfig"
+include_fields = ["service", "auditLogConfigs"]
+
+[[types]]
+schema = "AuditLogConfig"
+include_fields = ["logType", "exemptedMembers"]
+
+[[types]]
+schema = "Operation"
+rust_name = "ProjectsLro"
+include_fields = ["name", "done", "error", "response", "metadata"]
+
+[types.field_overrides]
+name = { required = true }
+done = { required = true }
+error = { rust_type = "serde_json::Value" }
+response = { rust_type = "serde_json::Value" }
+metadata = { rust_type = "serde_json::Value" }
+
+[[types]]
+schema = "GetIamPolicyRequest"
+include_fields = ["options"]
+
+[[types]]
+schema = "GetPolicyOptions"
+include_fields = ["requestedPolicyVersion"]
+
+[[types]]
+schema = "SetIamPolicyRequest"
+include_fields = ["policy", "updateMask"]
+
+[[types]]
+schema = "TestIamPermissionsRequest"
+include_fields = ["permissions"]
+
+[[types]]
+schema = "TestIamPermissionsResponse"
+include_fields = ["permissions"]
+
+[[types]]
+schema = "MoveProjectRequest"
+include_fields = ["destinationParent"]
+
+[[types]]
+schema = "UndeleteProjectRequest"
+
+# --- Operations ---
+# Projects resource + operations.get
+
+[[operations]]
+discovery_method = "projects.get"
+rust_name = "get_project"
+description = "Retrieves the project identified by the specified name."
+
+[[operations]]
+discovery_method = "projects.list"
+rust_name = "list_projects"
+description = "Lists projects that are direct children of the specified folder or organization resource."
+query_params = ["parent", "pageToken"]
+list_response = { type_name = "ListProjectsResponse", items_field = "projects", item_type = "Project" }
+
+[[operations]]
+discovery_method = "projects.search"
+rust_name = "search_projects"
+description = "Search for projects that the caller has both resourcemanager.projects.get permission on, and also satisfy the specified query."
+query_params = ["query", "pageToken"]
+list_response = { type_name = "SearchProjectsResponse", items_field = "projects", item_type = "Project" }
+
+[[operations]]
+discovery_method = "projects.create"
+rust_name = "create_project"
+description = "Request that a new project be created."
+is_lro = true
+
+[[operations]]
+discovery_method = "projects.delete"
+rust_name = "delete_project"
+description = "Marks the project identified by the specified name for deletion."
+is_lro = true
+
+[[operations]]
+discovery_method = "projects.undelete"
+rust_name = "undelete_project"
+description = "Restores the project identified by the specified name."
+is_lro = true
+
+[[operations]]
+discovery_method = "projects.move"
+rust_name = "move_project"
+description = "Move a project to another place in your resource hierarchy."
+is_lro = true
+
+[[operations]]
+discovery_method = "projects.patch"
+rust_name = "update_project"
+description = "Updates the display_name and labels of the project identified by the specified name."
+is_lro = true
+
+[[operations]]
+discovery_method = "projects.getIamPolicy"
+rust_name = "get_iam_policy"
+description = "Returns the IAM access control policy for the specified project."
+
+[[operations]]
+discovery_method = "projects.setIamPolicy"
+rust_name = "set_iam_policy"
+description = "Sets the IAM access control policy for the specified project."
+
+[[operations]]
+discovery_method = "projects.testIamPermissions"
+rust_name = "test_iam_permissions"
+description = "Returns permissions that a caller has on the specified project."
+
+# Note: operations.get is not generated here — ResourceManagerOperation
+# in operation.rs constructs the poll URL directly (same pattern as ServiceUsageOperation).

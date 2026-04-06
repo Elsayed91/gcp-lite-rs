@@ -1,0 +1,69 @@
+# API Keys API - Codegen Manifest
+# Operations needed for GCP CIS benchmark checks:
+#   - iam_api_keys_active_services (CIS 1.12): restrictions.apiTargets on each key
+#   - iam_api_keys_restricted_hosts (CIS 1.13): restrictions.browserKeyRestrictions / serverKeyRestrictions / androidKeyRestrictions / iosKeyRestrictions
+#   - iam_api_keys_restricted_apis (CIS 1.14): restrictions.apiTargets
+#   - iam_api_keys_rotation (CIS 1.15): createTime (check key age)
+
+[api]
+name = "apikeys"
+display_name = "API Keys API"
+version = "v2"
+discovery_url = "https://www.googleapis.com/discovery/v1/apis/apikeys/v2/rest"
+base_url = "https://apikeys.googleapis.com"
+doc_url = "https://cloud.google.com/api-keys/docs"
+
+[api.client]
+accessor_name = "apikeys"
+client_struct = "ApikeysClient"
+
+# --- Types ---
+
+[[types]]
+schema = "V2ApiTarget"
+include_fields = ["service", "methods"]
+
+[[types]]
+schema = "V2BrowserKeyRestrictions"
+include_fields = ["allowedReferrers"]
+
+[[types]]
+schema = "V2ServerKeyRestrictions"
+include_fields = ["allowedIps"]
+
+[[types]]
+schema = "V2AndroidApplication"
+include_fields = ["sha1Fingerprint", "packageName"]
+
+[[types]]
+schema = "V2AndroidKeyRestrictions"
+include_fields = ["allowedApplications"]
+
+[[types]]
+schema = "V2IosKeyRestrictions"
+include_fields = ["allowedBundleIds"]
+
+[[types]]
+schema = "V2Restrictions"
+include_fields = ["browserKeyRestrictions", "serverKeyRestrictions", "androidKeyRestrictions", "iosKeyRestrictions", "apiTargets"]
+
+[[types]]
+schema = "V2Key"
+include_fields = ["name", "uid", "displayName", "createTime", "updateTime", "annotations", "restrictions", "etag", "serviceAccountEmail"]
+
+[types.field_overrides]
+name = { required = true }
+
+# --- Operations ---
+
+[[operations]]
+discovery_method = "projects.locations.keys.list"
+rust_name = "list_keys"
+description = "Lists the API keys owned by a project. The key string is not included. Location must be `global`."
+query_params = ["pageSize", "pageToken", "showDeleted"]
+list_response = { type_name = "V2ListKeysResponse", items_field = "keys", item_type = "V2Key" }
+
+[[operations]]
+discovery_method = "projects.locations.keys.get"
+rust_name = "get_key"
+description = "Gets the metadata for an API key. The key string is not included. Location must be `global`."

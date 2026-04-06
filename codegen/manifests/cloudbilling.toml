@@ -1,0 +1,43 @@
+# Cloud Billing API - Codegen Manifest
+# Project billing info operations (get and link billing accounts).
+
+[api]
+name = "cloudbilling"
+display_name = "Cloud Billing"
+version = "v1"
+discovery_url = "https://www.googleapis.com/discovery/v1/apis/cloudbilling/v1/rest"
+base_url = "https://cloudbilling.googleapis.com"
+doc_url = "https://cloud.google.com/billing/docs/apis"
+
+[api.client]
+accessor_name = "billing"
+client_struct = "BillingClient"
+
+# --- Types ---
+
+[[types]]
+schema = "ProjectBillingInfo"
+include_fields = ["billingAccountName", "billingEnabled", "name", "projectId"]
+
+[types.field_overrides]
+name = { required = true }
+
+# --- Operations ---
+
+[[operations]]
+discovery_resource = "projects"
+discovery_method = "getBillingInfo"
+rust_name = "get_billing_info"
+description = "Gets the billing information for a project"
+
+[[operations]]
+discovery_resource = "projects"
+discovery_method = "updateBillingInfo"
+rust_name = "update_billing_info"
+description = "Sets or updates the billing account associated with a project"
+
+# === Omitted ===
+# [types.omitted]
+# BillingAccount = "Not needed - focus on project billing info only"
+# Policy = "IAM policy not in scope"
+# Service/Sku = "Service catalog not in scope"

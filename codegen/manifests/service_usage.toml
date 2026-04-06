@@ -1,0 +1,100 @@
+# Service Usage API - Codegen Manifest
+# Defines which types and operations to generate from the GCP discovery document.
+
+[api]
+name = "service_usage"
+display_name = "Service Usage"
+version = "v1"
+discovery_url = "https://serviceusage.googleapis.com/$discovery/rest?version=v1"
+base_url = "https://serviceusage.googleapis.com"
+doc_url = "https://cloud.google.com/service-usage/docs/reference/rest/v1"
+
+[api.client]
+accessor_name = "service_usage"
+client_struct = "ServiceUsageClient"
+
+[api.lro]
+pattern = "name_based"
+response_type = "ServiceUsageLro"
+poll_config = "service_usage_operation"
+operation_struct = "ServiceUsageOperation"
+base_url = "https://serviceusage.googleapis.com"
+poll_path = "/v1/{name}"
+
+[api.path_helpers]
+service_name = "projects/{project}/services/{service}"
+parent = "projects/{project}"
+
+# Types to generate
+# Each [[types]] entry maps a discovery schema to a Rust struct.
+
+[[types]]
+schema = "GoogleApiServiceusageV1Service"
+rust_name = "ServiceState"
+include_fields = ["name", "parent", "state"]
+
+[types.field_overrides]
+name = { required = true }
+state = { enum_type = "ServiceStateEnum" }
+
+[types.omitted]
+config = "Triggers ~15 auto-dependency types (Api, Documentation, Monitoring, etc.) that nobody uses"
+
+[[types]]
+schema = "DisableServiceRequest"
+rust_name = "DisableServiceRequest"
+
+[types.field_overrides]
+checkIfServiceHasUsage = { enum_type = "CheckIfServiceHasUsage" }
+
+[[types]]
+schema = "EnableServiceRequest"
+rust_name = "EnableServiceRequest"
+
+[[types]]
+schema = "Operation"
+rust_name = "ServiceUsageLro"
+include_fields = ["name", "done", "error", "response", "metadata"]
+
+[types.field_overrides]
+name = { required = true }
+done = { required = true }
+error = { rust_type = "serde_json::Value" }
+response = { rust_type = "serde_json::Value" }
+metadata = { rust_type = "serde_json::Value" }
+
+[[types]]
+schema = "BatchEnableServicesRequest"
+include_fields = ["serviceIds"]
+
+# Operations
+
+[[operations]]
+discovery_method = "services.get"
+rust_name = "get_service"
+description = "Get the state of a service for a project"
+
+[[operations]]
+discovery_method = "services.enable"
+rust_name = "enable_service"
+description = "Enable a service for a project"
+is_lro = true
+
+[[operations]]
+discovery_method = "services.disable"
+rust_name = "disable_service"
+description = "Disable a service for a project"
+is_lro = true
+
+[[operations]]
+discovery_method = "services.list"
+rust_name = "list_services"
+description = "List all services available for a project"
+list_response = { type_name = "ListServicesResponse", items_field = "services", item_type = "ServiceState" }
+query_params = ["pageToken", "filter", "pageSize"]
+
+[[operations]]
+discovery_method = "services.batchEnable"
+rust_name = "batch_enable_services"
+description = "Enable multiple services for a project in a single request"
+is_lro = true

@@ -1,0 +1,58 @@
+# Essential Contacts API - Codegen Manifest
+# Needed by: iam_essential_contacts (1.16)
+
+[api]
+name = "essentialcontacts"
+display_name = "Essential Contacts API"
+version = "v1"
+discovery_url = "https://essentialcontacts.googleapis.com/$discovery/rest?version=v1"
+base_url = "https://essentialcontacts.googleapis.com"
+doc_url = "https://cloud.google.com/resource-manager/docs/managing-notification-contacts"
+
+[api.client]
+accessor_name = "essential_contacts"
+client_struct = "EssentialContactsClient"
+
+# --- Types ---
+
+[[types]]
+schema = "GoogleCloudEssentialcontactsV1Contact"
+rust_name = "EssentialContact"
+include_fields = ["name", "email", "notificationCategorySubscriptions", "languageTag", "validationState", "validateTime"]
+
+[types.field_overrides]
+email = { required = true }
+notificationCategorySubscriptions = { rust_type = "Vec<String>" }
+
+[[types]]
+schema = "GoogleCloudEssentialcontactsV1ListContactsResponse"
+rust_name = "ListContactsResponse"
+include_fields = ["contacts", "nextPageToken"]
+
+[[types]]
+schema = "GoogleProtobufEmpty"
+rust_name = "EssentialContactsEmpty"
+
+# --- Operations ---
+
+[[operations]]
+discovery_method = "projects.contacts.list"
+rust_name = "list_contacts"
+description = "Lists the contacts that have been set on a resource."
+query_params = ["pageSize", "pageToken"]
+list_response = { type_name = "ListContactsResponse", items_field = "contacts", item_type = "EssentialContact" }
+
+[[operations]]
+discovery_method = "projects.contacts.get"
+rust_name = "get_contact"
+description = "Gets a single contact."
+
+[[operations]]
+discovery_method = "projects.contacts.create"
+rust_name = "create_contact"
+description = "Adds a new contact to a resource."
+
+[[operations]]
+discovery_method = "projects.contacts.delete"
+rust_name = "delete_contact"
+description = "Deletes a contact."

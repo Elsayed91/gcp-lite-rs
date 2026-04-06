@@ -1,0 +1,10 @@
+---
+source: tests/snapshot/storage.rs
+expression: resp
+---
+{
+  "done": false,
+  "objectSize": "1000",
+  "rewriteToken": "token-abc",
+  "totalBytesRewritten": "500"
+}

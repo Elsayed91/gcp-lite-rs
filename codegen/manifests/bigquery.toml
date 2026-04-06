@@ -1,0 +1,449 @@
+# BigQuery API - Codegen Manifest
+# Datasets (list, get), Tables (list, get, patch), Jobs (query, insert, get, list).
+# No LROs — all operations are synchronous.
+
+[api]
+name = "bigquery"
+display_name = "BigQuery"
+version = "v2"
+discovery_url = "https://www.googleapis.com/discovery/v1/apis/bigquery/v2/rest"
+base_url = "https://bigquery.googleapis.com/bigquery/v2"
+doc_url = "https://cloud.google.com/bigquery/docs/reference/rest/v2"
+
+[api.client]
+accessor_name = "bigquery"
+client_struct = "BigqueryClient"
+
+# --- Reference Types ---
+
+[[types]]
+schema = "DatasetReference"
+include_fields = ["datasetId", "projectId"]
+
+[types.field_overrides]
+datasetId = { required = true }
+
+[[types]]
+schema = "TableReference"
+include_fields = ["datasetId", "projectId", "tableId"]
+
+[types.field_overrides]
+datasetId = { required = true }
+projectId = { required = true }
+tableId = { required = true }
+
+[[types]]
+schema = "JobReference"
+include_fields = ["jobId", "location", "projectId"]
+
+[types.field_overrides]
+jobId = { required = true }
+
+[[types]]
+schema = "ErrorProto"
+include_fields = ["debugInfo", "location", "message", "reason"]
+
+# --- Schema Types ---
+
+[[types]]
+schema = "TableSchema"
+include_fields = ["fields"]
+
+[[types]]
+schema = "TableFieldSchema"
+include_fields = ["description", "fields", "mode", "name", "type"]
+
+[types.field_overrides]
+name = { required = true }
+type = { rust_name = "field_type", serde_rename = "type", required = true }
+
+[[types]]
+schema = "TableRow"
+include_fields = ["f"]
+
+[[types]]
+schema = "TableCell"
+include_fields = ["v"]
+
+[types.field_overrides]
+v = { rust_type = "serde_json::Value" }
+
+[[types]]
+schema = "ExternalDatasetReference"
+include_fields = ["connection", "externalSource"]
+
+# --- Dataset Types ---
+
+[[types]]
+schema = "Dataset"
+include_fields = [
+    "access", "datasetReference", "description", "friendlyName", "id", "kind",
+    "labels", "location", "creationTime", "lastModifiedTime",
+    "defaultTableExpirationMs", "defaultPartitionExpirationMs",
+    "etag", "selfLink", "type",
+]
+
+[types.field_overrides]
+# BigQuery dataset IAM/ACL is controlled via the access array (not standard getIamPolicy/setIamPolicy).
+# Typed as Vec<serde_json::Value> to preserve all ACL entry fields (specialGroup, role,
+# userByEmail, groupByEmail, domain, iamMember, view, routine, dataset, condition)
+# while avoiding a complex inline struct with deep references.
+access = { rust_type = "Vec<serde_json::Value>" }
+type = { rust_name = "type_value", serde_rename = "type" }
+
+[types.omitted]
+defaultCollation = "Rarely used"
+defaultEncryptionConfiguration = "CMEK — separate concern"
+defaultRoundingMode = "Rarely used"
+externalCatalogDatasetOptions = "External catalog — uncommon"
+externalDatasetReference = "External dataset — uncommon"
+isCaseInsensitive = "Rarely used"
+linkedDatasetMetadata = "Linked datasets — uncommon"
+linkedDatasetSource = "Linked datasets — uncommon"
+maxTimeTravelHours = "Advanced feature"
+resourceTags = "Resource tags — separate concern"
+restrictions = "Restrictions — uncommon"
+satisfiesPzi = "Compliance flags"
+satisfiesPzs = "Compliance flags"
+storageBillingModel = "Billing model — uncommon"
+tags = "Tags — separate concern"
+
+[[types]]
+schema = "DatasetList"
+include_fields = ["datasets", "etag", "kind", "nextPageToken"]
+
+[types.field_overrides]
+datasets = { inline_struct = "DatasetListItem" }
+
+# --- Table Types ---
+
+[[types]]
+schema = "Table"
+include_fields = [
+    "tableReference", "description", "friendlyName", "id", "kind",
+    "labels", "location", "creationTime", "lastModifiedTime",
+    "expirationTime", "schema", "numBytes", "numRows", "numPartitions",
+    "type", "etag", "selfLink", "clustering", "timePartitioning",
+    "rangePartitioning", "requirePartitionFilter",
+]
+
+[types.field_overrides]
+type = { rust_name = "type_value", serde_rename = "type" }
+
+[types.omitted]
+biglakeConfiguration = "BigLake — uncommon"
+cloneDefinition = "Clone metadata — uncommon"
+defaultCollation = "Rarely used"
+defaultRoundingMode = "Rarely used"
+encryptionConfiguration = "CMEK — separate concern"
+externalCatalogTableOptions = "External catalog — uncommon"
+externalDataConfiguration = "External data — separate concern"
+managedTableType = "Rarely used"
+materializedView = "Materialized views — separate concern"
+materializedViewStatus = "Materialized views — separate concern"
+maxStaleness = "Materialized views — separate concern"
+model = "Deprecated"
+numActiveLogicalBytes = "Detailed storage metrics"
+numActivePhysicalBytes = "Detailed storage metrics"
+numCurrentPhysicalBytes = "Detailed storage metrics"
+numLongTermBytes = "Detailed storage metrics"
+numLongTermLogicalBytes = "Detailed storage metrics"
+numLongTermPhysicalBytes = "Detailed storage metrics"
+numPhysicalBytes = "Detailed storage metrics"
+numTimeTravelPhysicalBytes = "Detailed storage metrics"
+numTotalLogicalBytes = "Detailed storage metrics"
+numTotalPhysicalBytes = "Detailed storage metrics"
+partitionDefinition = "Detailed partitioning info"
+replicas = "Replication — uncommon"
+resourceTags = "Resource tags — separate concern"
+restrictions = "Restrictions — uncommon"
+snapshotDefinition = "Snapshots — uncommon"
+streamingBuffer = "Streaming info — separate concern"
+tableConstraints = "Constraints — uncommon"
+tableReplicationInfo = "Replication — uncommon"
+view = "View definition — separate concern"
+
+[[types]]
+schema = "TableList"
+include_fields = ["etag", "kind", "nextPageToken", "tables", "totalItems"]
+
+[types.field_overrides]
+tables = { inline_struct = "TableListItem" }
+
+[[types]]
+schema = "Clustering"
+include_fields = ["fields"]
+
+[[types]]
+schema = "TimePartitioning"
+include_fields = ["expirationMs", "field", "type"]
+
+[types.field_overrides]
+type = { rust_name = "partition_type", serde_rename = "type" }
+
+[[types]]
+schema = "RangePartitioning"
+include_fields = ["field", "range"]
+
+[types.field_overrides]
+range = { inline_struct = "RangePartitioningRange" }
+
+# --- Job Types ---
+
+[[types]]
+schema = "Job"
+include_fields = [
+    "configuration", "etag", "id", "jobReference", "kind",
+    "selfLink", "statistics", "status", "user_email",
+]
+
+[types.omitted]
+jobCreationReason = "Rarely inspected"
+principal_subject = "Identity info — rarely needed"
+
+[[types]]
+schema = "JobConfiguration"
+include_fields = ["dryRun", "jobType", "labels", "query"]
+
+[types.omitted]
+copy = "Copy jobs — not in scope"
+extract = "Extract jobs — not in scope"
+load = "Load jobs — not in scope"
+jobTimeoutMs = "Rarely set"
+maxSlots = "Rate limiting — rarely used"
+reservation = "Reservation — rarely used"
+
+[[types]]
+schema = "JobConfigurationQuery"
+include_fields = [
+    "query", "useLegacySql", "useQueryCache", "defaultDataset",
+    "destinationTable", "createDisposition", "writeDisposition",
+    "priority", "maximumBytesBilled", "parameterMode",
+]
+
+[types.field_overrides]
+query = { required = true }
+
+[types.omitted]
+allowLargeResults = "Legacy SQL only"
+clustering = "Advanced partitioning"
+connectionProperties = "Connection properties — uncommon"
+continuous = "Continuous queries — uncommon"
+createSession = "Sessions — uncommon"
+destinationEncryptionConfiguration = "CMEK — separate concern"
+flattenResults = "Legacy SQL only"
+maximumBillingTier = "Deprecated"
+preserveNulls = "Deprecated"
+queryParameters = "Parameterized queries — can extend later"
+rangePartitioning = "Advanced partitioning"
+schemaUpdateOptions = "Schema updates — uncommon"
+scriptOptions = "Script options — uncommon"
+systemVariables = "System variables — read-only"
+tableDefinitions = "External tables — uncommon"
+timePartitioning = "Advanced partitioning"
+userDefinedFunctionResources = "UDFs — uncommon"
+writeIncrementalResults = "Incremental results — uncommon"
+
+[[types]]
+schema = "JobStatus"
+include_fields = ["errorResult", "errors", "state"]
+
+[[types]]
+schema = "JobStatistics"
+include_fields = [
+    "creationTime", "endTime", "startTime",
+    "totalBytesProcessed", "totalSlotMs",
+    "numChildJobs", "parentJobId",
+]
+
+[types.omitted]
+completionRatio = "For load/extract jobs"
+copy = "Copy job stats"
+dataMaskingStatistics = "Data masking stats"
+edition = "Edition info"
+extract = "Extract job stats"
+finalExecutionDurationMs = "Final execution duration"
+load = "Load job stats"
+query = "Query-specific stats (JobStatistics2) — large nested type"
+quotaDeferments = "Quota deferments"
+reservationGroupPath = "Reservation info"
+reservationUsage = "Deprecated"
+reservation_id = "Reservation info"
+rowLevelSecurityStatistics = "RLS stats"
+scriptStatistics = "Script stats"
+sessionInfo = "Session info"
+transactionInfo = "Transaction info"
+
+[[types]]
+schema = "JobList"
+include_fields = ["etag", "jobs", "kind", "nextPageToken"]
+
+[types.field_overrides]
+jobs = { inline_struct = "JobListItem" }
+
+# --- Query Types ---
+
+[[types]]
+schema = "QueryRequest"
+include_fields = [
+    "query", "useLegacySql", "useQueryCache", "defaultDataset",
+    "dryRun", "maxResults", "timeoutMs", "location",
+    "maximumBytesBilled", "parameterMode", "labels",
+]
+
+[types.field_overrides]
+query = { required = true }
+
+[types.omitted]
+connectionProperties = "Connection properties — uncommon"
+continuous = "Continuous queries — uncommon"
+createSession = "Sessions — uncommon"
+destinationEncryptionConfiguration = "CMEK — separate concern"
+formatOptions = "Format options — uncommon"
+jobCreationMode = "Job creation mode — advanced"
+jobTimeoutMs = "Job timeout — use timeoutMs instead"
+kind = "Always bigquery#queryRequest"
+maxSlots = "Rate limiting — rarely used"
+preserveNulls = "Deprecated"
+queryParameters = "Parameterized queries — can extend later"
+requestId = "Idempotency — can extend later"
+reservation = "Reservation — rarely used"
+writeIncrementalResults = "Incremental results — uncommon"
+
+[[types]]
+schema = "QueryResponse"
+include_fields = [
+    "jobComplete", "jobReference", "kind", "rows", "schema",
+    "totalBytesProcessed", "totalRows", "cacheHit",
+    "errors", "pageToken", "numDmlAffectedRows",
+]
+
+[types.omitted]
+creationTime = "Rarely needed from query response"
+dmlStats = "DML statistics — uncommon"
+endTime = "Rarely needed"
+jobCreationReason = "Rarely inspected"
+location = "Can get from jobReference"
+queryId = "Internal query ID"
+sessionInfo = "Session info"
+startTime = "Rarely needed"
+totalBytesBilled = "Billing info"
+totalSlotMs = "Slot usage info"
+
+# --- Job Cancel Response ---
+
+[[types]]
+schema = "JobCancelResponse"
+include_fields = ["job", "kind"]
+
+# --- Operations ---
+
+# Datasets
+[[operations]]
+discovery_resource = "datasets"
+discovery_method = "get"
+rust_name = "get_dataset"
+description = "Returns the dataset specified by datasetID."
+
+[[operations]]
+discovery_resource = "datasets"
+discovery_method = "list"
+rust_name = "list_datasets"
+description = "Lists all datasets in the specified project."
+list_response = { type_name = "DatasetList", items_field = "datasets", item_type = "DatasetListItem" }
+query_params = ["all", "filter", "maxResults", "pageToken"]
+
+[[operations]]
+discovery_resource = "datasets"
+discovery_method = "insert"
+rust_name = "create_dataset"
+description = "Creates a new empty dataset."
+
+[[operations]]
+discovery_resource = "datasets"
+discovery_method = "delete"
+rust_name = "delete_dataset"
+description = "Deletes the dataset specified by the datasetId value."
+query_params = ["deleteContents"]
+
+[[operations]]
+discovery_resource = "datasets"
+discovery_method = "patch"
+rust_name = "patch_dataset"
+description = "Updates information in an existing dataset using patch semantics."
+
+# Tables
+[[operations]]
+discovery_resource = "tables"
+discovery_method = "get"
+rust_name = "get_table"
+description = "Gets the specified table resource by table ID."
+
+[[operations]]
+discovery_resource = "tables"
+discovery_method = "list"
+rust_name = "list_tables"
+description = "Lists all tables in the specified dataset."
+list_response = { type_name = "TableList", items_field = "tables", item_type = "TableListItem" }
+query_params = ["maxResults", "pageToken"]
+
+[[operations]]
+discovery_resource = "tables"
+discovery_method = "insert"
+rust_name = "create_table"
+description = "Creates a new, empty table in the dataset."
+
+[[operations]]
+discovery_resource = "tables"
+discovery_method = "delete"
+rust_name = "delete_table"
+description = "Deletes the table specified by tableId from the dataset."
+
+[[operations]]
+discovery_resource = "tables"
+discovery_method = "patch"
+rust_name = "patch_table"
+description = "Updates information in an existing table using patch semantics."
+
+# Jobs
+[[operations]]
+discovery_resource = "jobs"
+discovery_method = "query"
+rust_name = "query_jobs"
+description = "Runs a BigQuery SQL query synchronously and returns query results."
+
+[[operations]]
+discovery_resource = "jobs"
+discovery_method = "insert"
+rust_name = "insert_job"
+description = "Starts a new asynchronous job."
+
+[[operations]]
+discovery_resource = "jobs"
+discovery_method = "get"
+rust_name = "get_job"
+description = "Returns information about a specific job."
+query_params = ["location"]
+
+[[operations]]
+discovery_resource = "jobs"
+discovery_method = "list"
+rust_name = "list_jobs"
+description = "Lists all jobs that you started in the specified project."
+list_response = { type_name = "JobList", items_field = "jobs", item_type = "JobListItem" }
+# stateFilter is repeated: true in discovery doc — codegen generates &[&str] + loop-based URL
+query_params = ["allUsers", "stateFilter", "maxResults", "pageToken", "projection", "parentJobId", "minCreationTime", "maxCreationTime"]
+
+[[operations]]
+discovery_resource = "jobs"
+discovery_method = "cancel"
+rust_name = "cancel_job"
+description = "Requests that a job be cancelled."
+query_params = ["location"]
+
+[[operations]]
+discovery_resource = "jobs"
+discovery_method = "delete"
+rust_name = "delete_job"
+description = "Requests the deletion of the metadata of a job."
+query_params = ["location"]

@@ -1,0 +1,130 @@
+# Backup for GKE API - Codegen Manifest
+# Curated for backup plan CRUD operations.
+#
+# GKE Backup uses standard Google LRO (name_based) pattern:
+#   Operations poll via GET /v1/{name} until done == true
+
+[api]
+name = "gkebackup"
+display_name = "Backup for GKE"
+version = "v1"
+discovery_url = "https://gkebackup.googleapis.com/$discovery/rest?version=v1"
+base_url = "https://gkebackup.googleapis.com"
+doc_url = "https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke"
+
+[api.client]
+accessor_name = "gkebackup"
+client_struct = "GkeBackupClient"
+
+[api.lro]
+pattern = "name_based"
+response_type = "GkeBackupLro"
+poll_config = "gke_backup_operation"
+operation_struct = "GkeBackupOperation"
+base_url = "https://gkebackup.googleapis.com"
+poll_path = "/v1/{name}"
+
+# --- Types ---
+
+[[types]]
+schema = "BackupPlan"
+include_fields = [
+    "name",
+    "cluster",
+    "description",
+    "createTime",
+    "updateTime",
+    "etag",
+    "labels",
+    "state",
+    "stateReason",
+    "uid",
+    "backupConfig",
+    "backupSchedule",
+    "retentionPolicy",
+    "protectedPodCount",
+    "deactivated",
+]
+
+[types.field_overrides]
+name = { required = true }
+state = { enum_type = "BackupPlanState" }
+
+[types.omitted]
+backupChannel = "Cross-project backup channel — advanced feature"
+lastSuccessfulBackupTime = "Read-only field, not needed for CRUD"
+rpoRiskLevel = "RPO risk assessment — informational only"
+rpoRiskReason = "RPO risk assessment — informational only"
+
+[[types]]
+schema = "BackupConfig"
+include_fields = [
+    "allNamespaces",
+    "includeVolumeData",
+    "includeSecrets",
+    "permissiveMode",
+]
+
+[types.omitted]
+selectedApplications = "Complex nested type (NamespacedNames) — use allNamespaces for basic usage"
+selectedNamespaces = "Complex nested type (Namespaces) — use allNamespaces for basic usage"
+selectedNamespaceLabels = "Complex nested type (ResourceLabels)"
+encryptionKey = "Advanced CMEK encryption config"
+
+[[types]]
+schema = "Schedule"
+rust_name = "BackupSchedule"
+include_fields = ["cronSchedule", "paused"]
+
+[types.omitted]
+rpoConfig = "Advanced RPO configuration"
+nextScheduledBackupTime = "Read-only output field"
+
+[[types]]
+schema = "RetentionPolicy"
+include_fields = ["backupDeleteLockDays", "backupRetainDays", "locked"]
+
+[[types]]
+schema = "ListBackupPlansResponse"
+include_fields = ["backupPlans", "nextPageToken"]
+
+[[types]]
+schema = "GoogleLongrunningOperation"
+rust_name = "GkeBackupLro"
+include_fields = ["name", "done", "error", "response", "metadata"]
+
+[types.field_overrides]
+name = { required = true }
+done = { required = true }
+error = { rust_type = "serde_json::Value" }
+response = { rust_type = "serde_json::Value" }
+metadata = { rust_type = "serde_json::Value" }
+
+# --- Operations ---
+
+[[operations]]
+discovery_method = "projects.locations.backupPlans.get"
+rust_name = "get_backup_plan"
+description = "Gets details of a single BackupPlan."
+
+[[operations]]
+discovery_method = "projects.locations.backupPlans.list"
+rust_name = "list_backup_plans"
+description = "Lists BackupPlans in a given location."
+list_response = { type_name = "ListBackupPlansResponse", items_field = "backupPlans", item_type = "BackupPlan" }
+
+[[operations]]
+discovery_method = "projects.locations.backupPlans.create"
+rust_name = "create_backup_plan"
+description = "Creates a new BackupPlan."
+is_lro = true
+query_params = ["backupPlanId"]
+
+[[operations]]
+discovery_method = "projects.locations.backupPlans.delete"
+rust_name = "delete_backup_plan"
+description = "Deletes an existing BackupPlan."
+is_lro = true
+
+# Note: operations.get is not needed — GkeBackupOperation in operation.rs
+# constructs the poll URL directly via GET /v1/{name}.

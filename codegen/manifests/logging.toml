@@ -1,0 +1,121 @@
+# Cloud Logging API - Codegen Manifest
+# Operations needed for GCP CIS benchmark checks:
+#   - logging_sinks_configured (CIS 2.2): ListSinks, CreateSink, DeleteSink
+#   - logging_bucket_retention_locked (CIS 2.3): ListSinks (find destination bucket)
+#   - alert policy checks (CIS 2.4-2.11): ListMetrics, CreateMetric, DeleteMetric
+
+[api]
+name = "logging"
+display_name = "Cloud Logging API"
+version = "v2"
+discovery_url = "https://www.googleapis.com/discovery/v1/apis/logging/v2/rest"
+base_url = "https://logging.googleapis.com"
+doc_url = "https://cloud.google.com/logging/docs/reference/v2/rest"
+
+[api.client]
+accessor_name = "logging"
+client_struct = "LoggingClient"
+
+[api.path_helpers]
+project_name = "projects/{project}"
+sink_name = "projects/{project}/sinks/{sink}"
+metric_name = "projects/{project}/metrics/{metric}"
+
+# --- Types ---
+
+[[types]]
+schema = "BigQueryOptions"
+include_fields = ["usePartitionedTables", "usesTimestampColumnPartitioning"]
+
+[[types]]
+schema = "LogSink"
+include_fields = ["name", "destination", "filter", "description", "disabled", "writerIdentity", "includeChildren", "bigqueryOptions", "createTime", "updateTime"]
+
+[types.field_overrides]
+name = { required = true }
+destination = { required = true }
+
+[[types]]
+schema = "LabelDescriptor"
+include_fields = ["key", "valueType", "description"]
+
+[types.field_overrides]
+key = { required = true }
+
+[[types]]
+schema = "MetricDescriptorMetadata"
+include_fields = ["launchStage", "samplePeriod", "ingestDelay"]
+
+[[types]]
+schema = "MetricDescriptor"
+include_fields = ["name", "type", "labels", "metricKind", "valueType", "unit", "description", "displayName", "metadata", "launchStage"]
+
+[types.field_overrides]
+type = { rust_name = "metric_type", serde_rename = "type" }
+
+[[types]]
+schema = "LogMetric"
+include_fields = ["name", "description", "filter", "disabled", "metricDescriptor", "valueExtractor", "labelExtractors", "createTime", "updateTime"]
+
+[types.field_overrides]
+name = { required = true }
+filter = { required = true }
+labelExtractors = { rust_type = "HashMap<String, String>" }
+
+[[types]]
+schema = "Empty"
+rust_name = "LoggingEmpty"
+
+[[types]]
+schema = "ListSinksResponse"
+include_fields = ["sinks", "nextPageToken"]
+
+[[types]]
+schema = "ListLogMetricsResponse"
+include_fields = ["metrics", "nextPageToken"]
+
+# --- Operations ---
+
+[[operations]]
+discovery_method = "projects.sinks.list"
+rust_name = "list_sinks"
+description = "Lists sinks for a project."
+query_params = ["pageSize", "pageToken", "filter"]
+list_response = { type_name = "ListSinksResponse", items_field = "sinks", item_type = "LogSink" }
+
+[[operations]]
+discovery_method = "projects.sinks.get"
+rust_name = "get_sink"
+description = "Gets a log sink."
+
+[[operations]]
+discovery_method = "projects.sinks.create"
+rust_name = "create_sink"
+description = "Creates a log sink."
+
+[[operations]]
+discovery_method = "projects.sinks.delete"
+rust_name = "delete_sink"
+description = "Deletes a log sink."
+
+[[operations]]
+discovery_method = "projects.metrics.list"
+rust_name = "list_metrics"
+description = "Lists log-based metrics for a project."
+query_params = ["pageSize", "pageToken"]
+list_response = { type_name = "ListLogMetricsResponse", items_field = "metrics", item_type = "LogMetric" }
+
+[[operations]]
+discovery_method = "projects.metrics.get"
+rust_name = "get_metric"
+description = "Gets a log-based metric."
+
+[[operations]]
+discovery_method = "projects.metrics.create"
+rust_name = "create_metric"
+description = "Creates a log-based metric."
+
+[[operations]]
+discovery_method = "projects.metrics.delete"
+rust_name = "delete_metric"
+description = "Deletes a log-based metric."

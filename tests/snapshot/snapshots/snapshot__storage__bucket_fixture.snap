@@ -1,0 +1,25 @@
+---
+source: tests/snapshot/storage.rs
+expression: "Bucket::fixture()"
+---
+{
+  "defaultEventBasedHold": false,
+  "etag": "test-etag",
+  "generation": "test-generation",
+  "hardDeleteTime": "test-hard_delete_time",
+  "id": "test-id",
+  "kind": "test-kind",
+  "location": "test-location",
+  "locationType": "test-location_type",
+  "metageneration": "test-metageneration",
+  "name": "test-bucket",
+  "projectNumber": "test-project_number",
+  "rpo": "test-rpo",
+  "satisfiesPzi": false,
+  "satisfiesPzs": false,
+  "selfLink": "test-self_link",
+  "softDeleteTime": "test-soft_delete_time",
+  "storageClass": "test-storage_class",
+  "timeCreated": "test-time_created",
+  "updated": "test-updated"
+}
